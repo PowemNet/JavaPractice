@@ -1,0 +1,687 @@
+1- using dynamic programming to find sequences 
+
+A queue system wants to be able to anticipate the length of a message so that it can preallocate
+memory resources before receiving a message. The messages are delivered with a length
+parameter, which follows a sequence in the format:
+F(0) = 0, F(1) = 1
+For n > 1, F(n) = F(n-1) + F(n-2)
+Create a function called findNextValueInSequence which use dynamic programming to calculate the next
+length value of the next message, given the index of the next value.
+For example findNextValueInSequence(3) should return 2, and findNextValueInSequence(6) should return 8
+
+
+public class NumbersInSeries {
+  public static int findNextValueInSequence(int n) {
+    if (n < 0) {
+      throw new IllegalArgumentException("Number cannot be negative");
+    }
+
+    if (n == 0) {
+      return 0;
+    }
+
+    int[] numbsTable = new int[n + 1];
+    numbsTable[0] = 0;
+    numbsTable[1] = 1;
+
+    for (int i = 2; i <= n; i++) {
+      numbsTable[i] = numbsTable[i - 1] + numbsTable[i - 2];
+    }
+    return numbsTable[n];
+  }
+}
+
+public class Main {
+    public static void main(String[] args) {
+      // TEST
+      assert NumbersInSeries.findNextValueInSequence(0) == 0;
+      // TEST_END
+  
+      // TEST
+      assert NumbersInSeries.findNextValueInSequence(1) == 1;
+      // TEST_END
+  
+      // TEST
+      assert NumbersInSeries.findNextValueInSequence(2) == 1;
+      // TEST_END
+  
+      // TEST
+      assert NumbersInSeries.findNextValueInSequence(3) == 2;
+      // TEST_END
+  
+      // TEST
+      assert NumbersInSeries.findNextValueInSequence(4) == 3;
+      // TEST_END
+  
+      // TEST
+      try {
+        NumbersInSeries.findNextValueInSequence(-18);
+        assert false;
+      } catch (IllegalArgumentException e) {
+        assert true;
+      }
+      // TEST_END
+    }
+  }
+
+------------------------------------------------------------------------------------------------------------------------
+2- Dynamic Programming Problem: Exact Transaction Fee Combinations
+
+You are tasked with designing a system that calculates the different ways to 
+combine given transaction processing fees to exactly match a specified maximum 
+transaction fee cap. Each fee can be used any number of times. The system should 
+return the total number of unique combinations that achieve this exact sum.
+
+Example:
+
+Input: Processing Fees = [1, 2, 5], Fee Cap = 5
+Output: 4
+Explanation: The combinations that sum up to 5 are:
+[1, 1, 1, 1, 1]
+[1, 1, 1, 2]
+[1, 2, 2]
+[5]
+
+
+public class TransactionFeeCombinations {
+    public static int countCombinations(int[] fees, int cap) {
+      if (fees == null || cap < 0) {
+        throw new IllegalArgumentException("Invalid fees or cap");
+      }
+      int[] feesMatrix = new int[cap + 1];
+      feesMatrix[0] = 1;
+  
+      for (int fee : fees) {
+        for (int j = fee; j <= cap; j++) {
+          feesMatrix[j] += feesMatrix[j - fee];
+        }
+      }
+      return feesMatrix[cap];
+    }
+  }
+
+  public class Main {
+    public static void main(String[] args) {
+      // TEST
+      int[] fees1 = {1, 2, 5};
+      assert TransactionFeeCombinations.countCombinations(fees1, 5) == 4;
+      // TEST_END
+  
+      // TEST
+      int[] fees2 = {1};
+      assert TransactionFeeCombinations.countCombinations(fees2, 5) == 1;
+      // TEST_END
+  
+      // TEST
+      int[] fees3 = {};
+      assert TransactionFeeCombinations.countCombinations(fees3, 5) == 0;
+      // TEST_END
+  
+      // TEST
+      try {
+        TransactionFeeCombinations.countCombinations(null, 1);
+        assert false;
+      } catch (IllegalArgumentException e) {
+        assert true;
+      }
+      // TEST_END
+  
+      // TEST
+      try {
+        TransactionFeeCombinations.countCombinations(fees2, -1);
+        assert false;
+      } catch (IllegalArgumentException e) {
+        assert true;
+      }
+      // TEST_END
+    }
+  }
+
+------------------------------------------------------------------------------------------------------------------------
+3- LinkedList: Meeting Room Scheduler
+
+Meeting times are managed in a linked list where each node represents a 
+meeting's ' start time and duration.
+Implement a function detectConflicts(Meeting head) that checks for any overlapping 
+meetings and returns a list of strings describing each conflict.
+Each conflict should be identified by the overlapping meeting times and should list the affected meetings.
+Example:
+
+Input: Linked List of Meetings: ("09:00", 2 hours) -> ("10:00", 1 hour) -> ("11:00", 2 hours)
+Output: List of Conflicts: ["Conflict between 09:00 (2 hours) and 10:00 (1 hours)"]
+
+import java.time.LocalTime;
+import java.util.ArrayList;
+import java.util.List;
+
+public class MeetingRoomScheduler {
+  public static class Meeting {
+    public LocalTime start;
+    public int duration;
+    public Meeting next;
+
+    public Meeting(String start, int duration) {
+      if (start == null || start.isEmpty() || duration < 0) {
+        throw new IllegalArgumentException("invalid input");
+      }
+      this.start = LocalTime.parse(start);
+      this.duration = duration;
+      this.next = null;
+    }
+  }
+
+  public static List<String> detectConflicts(Meeting head) {
+    List<String> conflicts = new ArrayList<>();
+    Meeting current = head;
+
+    while (current != null) {
+      Meeting next = current.next;
+      LocalTime currentEndTime = current.start.plusHours(current.duration);
+
+      while (next != null) {
+        LocalTime nextStartTime = next.start;
+        LocalTime nextEndTime = next.start.plusHours(next.duration);
+
+        if ((current.start.isBefore(nextEndTime) && currentEndTime.isAfter(nextStartTime)) ||
+            (nextStartTime.isBefore(currentEndTime) && nextEndTime.isAfter(current.start))) {
+          String conflictMessage = "Conflict between " + current.start + " (" + current.duration +
+              " hours) and " + next.start + " (" + next.duration + " hours)";
+          if (!conflicts.contains(conflictMessage)) {
+            conflicts.add(conflictMessage);
+          }
+        }
+        next = next.next;
+      }
+      current = current.next;
+    }
+
+    return conflicts;
+  }
+}
+
+public class Main {
+    public static void main(String[] args) {
+      // TEST
+      Meeting meeting1 = new Meeting("09:00", 2);
+      meeting1.next = new Meeting("10:00", 1);
+      meeting1.next.next = new Meeting("11:00", 2);
+      List<String> result1 = MeetingRoomScheduler.detectConflicts(meeting1);
+      assert result1.size() == 1;
+      // TEST_END
+  
+      // TEST
+      assert result1.get(0).equals("Conflict between 09:00 (2 hours) and 10:00 (1 hours)");
+      // TEST_END
+  
+      // TEST
+      Meeting meeting2 = new Meeting("09:00", 2);
+      List<String> result2 = MeetingRoomScheduler.detectConflicts(meeting2);
+      assert result2.isEmpty();
+      // TEST_END
+  
+      // TEST
+      try {
+        Meeting meeting3 = new Meeting("", 2);
+        assert false;
+      } catch (IllegalArgumentException e) {
+        assert true;
+      }
+      // TEST_END
+  
+      // TEST
+      try {
+        Meeting meeting4 = new Meeting("09:00", -1);
+        assert false;
+      } catch (IllegalArgumentException e) {
+        assert true;
+      }
+      // TEST_END
+  
+      // TEST
+      try {
+        Meeting meeting4 = new Meeting("09:00kkk", 1);
+        assert false;
+      } catch (DateTimeParseException e) {
+        assert true;
+      }
+      // TEST_END
+    }
+  }
+  
+
+------------------------------------------------------------------------------------------------------------------------
+4-  Longest Substring Without Repeating Characters
+
+A real-time messaging application needs to know the longest substring of unique characters within a message, 
+as this could highlight the most informationally dense part of the conversation.
+Create a function called longestUniqueSubstring(String s) that returns the length of the longest substring without 
+repeating characters.
+
+Example:
+
+Input: "zefzefbb"
+Output: 4 ("zefb" is the longest substring without repeating characters.)
+
+Input: "zzzz"
+Output: 1 (The longest substring without repeating characters is "z".)
+
+public class SubStringUniqueCharacters {
+    public static int longestUniqueSubstring(String s) {
+      if (s == null) {
+        throw new IllegalArgumentException("Input cannot be null");
+      }
+      int maxLength = 0;
+      Map<Character, Integer> map = new HashMap<>();
+  
+      for (int i = 0, j = 0; j < s.length(); j++) {
+        char c = s.charAt(j);
+        if (map.containsKey(c)) {
+          i = Math.max(map.get(c) + 1, i);
+        }
+        map.put(c, j);
+        maxLength = Math.max(maxLength, j - i + 1);
+      }
+  
+      return maxLength;
+    }
+  }
+
+  public class Main {
+    public static void main(String[] args) {
+      // TEST
+      assert SubStringUniqueCharacters.longestUniqueSubstring("zefzefbb") == 4;
+      // TEST_END
+  
+      // TEST
+      assert SubStringUniqueCharacters.longestUniqueSubstring("zzzz") == 1;
+      // TEST_END
+  
+      // TEST
+      assert SubStringUniqueCharacters.longestUniqueSubstring("") == 0;
+      // TEST_END
+  
+      // TEST
+      try {
+        SubStringUniqueCharacters.longestUniqueSubstring(null);
+        assert false;
+      } catch (IllegalArgumentException e) {
+        assert true;
+      }
+      // TEST_END
+    }
+  }
+
+------------------------------------------------------------------------------------------------------------------------
+5- String Transformation with Minimum Operations
+
+In an automated document editing tool, users frequently need to transform strings from one form to another, 
+especially in templated content.
+Create a function minOperations(String source, String target) that calculates the minimum number of operations 
+required to transform the source string into the target string. 
+The function will determine the minimum number of operations needed to transform one string into another 
+using only insertions, deletions, and substitutions of characters.
+
+
+Example:
+
+Input: source = "kitten", target = "sitting"
+Output: 3 (The operations are: substitute 'k' with 's', substitute 'e' with 'i', insert 'g' at the end.)
+
+public class StringMinimumOperations {
+    public static int minOperations(String source, String target) {
+      if (source == null || target == null) {
+        throw new IllegalArgumentException("Inputs cannot be null");
+      }
+      int m = source.length();
+      int n = target.length();
+      int[][] dp = new int[m + 1][n + 1];
+  
+      for (int i = 0; i <= m; i++) {
+        for (int j = 0; j <= n; j++) {
+          if (i == 0) {
+            dp[i][j] = j;
+          } else if (j == 0) {
+            dp[i][j] = i;
+          } else if (source.charAt(i - 1) == target.charAt(j - 1)) {
+            dp[i][j] = dp[i - 1][j - 1];
+          } else {
+            dp[i][j] = 1 + Math.min(dp[i - 1][j - 1],
+                Math.min(dp[i - 1][j],
+                    dp[i][j - 1]));
+          }
+        }
+      }
+      return dp[m][n];
+    }
+  }
+
+
+  public class Main {
+    public static void main(String[] args) {
+      // TEST
+      assert StringMinimumOperations.minOperations("kitten", "sitting") == 3;
+      // TEST_END
+  
+      // TEST
+      assert StringMinimumOperations.minOperations("horse", "ros") == 3;
+      // TEST_END
+  
+      // TEST
+      assert StringMinimumOperations.minOperations("", "abc") == 3;
+      // TEST_END
+  
+      // TEST
+      try {
+        StringMinimumOperations.minOperations(null, "abc");
+        assert false;
+      } catch (IllegalArgumentException e) {
+        assert true;
+      }
+      // TEST_END
+  
+      // TEST
+      try {
+        StringMinimumOperations.minOperations("", null);
+        assert false;
+      } catch (IllegalArgumentException e) {
+        assert true;
+      }
+      // TEST_END
+    }
+  }
+
+
+------------------------------------------------------------------------------------------------------------------------
+6- Frequency Sorting of Characters
+
+A text analysis tool needs to sort the characters of a string by their 
+frequency in descending order. If multiple characters have the same frequency, they should be sorted in alphabetical 
+order.
+
+Implement a function frequencySort(String s) that returns a string where the characters are sorted first by frequency 
+(highest to lowest) and then by lexicographical order if frequencies are the same.
+
+Example:
+
+Input: "tree"
+Output: "eert" (Both 'e' characters appear twice, and 'r' and 't' each appear once, but 'e' comes 
+before 'r' and 't' in frequency and then alphabetically.)
+
+
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
+
+public class StringAlphabeticalFrequencySorter {
+  public static String frequencySort(String s) {
+    if (s == null) {
+      throw new IllegalArgumentException("Input cannot be null");
+    }
+    Map<Character, Integer> frequencyMap = new HashMap<>();
+    for (char c : s.toCharArray()) {
+      frequencyMap.put(c, frequencyMap.getOrDefault(c, 0) + 1);
+    }
+
+    List<Entry<Character, Integer>> list = new ArrayList<>(frequencyMap.entrySet());
+
+    Collections.sort(list, (a, b) -> {
+      if (a.getValue().equals(b.getValue())) {
+        return a.getKey().compareTo(b.getKey());
+      } else {
+        return b.getValue() - a.getValue();
+      }
+    });
+
+    StringBuilder sb = new StringBuilder();
+    for (Map.Entry<Character, Integer> entry : list) {
+      for (int i = 0; i < entry.getValue(); i++) {
+        sb.append(entry.getKey());
+      }
+    }
+    return sb.toString();
+  }
+}
+
+public class Main {
+    public static void main(String[] args) {
+      // TEST
+      assert StringAlphabeticalFrequencySorter.frequencySort("flee").equals("eefl");
+      // TEST_END
+  
+      // TEST
+      assert StringAlphabeticalFrequencySorter.frequencySort("tree").equals("eert");
+      // TEST_END
+  
+      // TEST
+      assert StringAlphabeticalFrequencySorter.frequencySort("Abb").equals("bbA");
+      // TEST_END
+  
+      // TEST
+      try {
+        StringAlphabeticalFrequencySorter.frequencySort(null);
+        assert false;
+      } catch (IllegalArgumentException e) {
+        assert true;
+      }
+      // TEST_END
+    }
+  }
+
+------------------------------------------------------------------------------------------------------------------------
+7- Validate String with Allowed Characters
+
+To prevent SQL injection or other forms of input tampering, a system needs a function 
+isValidInput(String input, String allowed) which checks whether all characters in the input string 
+are found in the allowed character string. Use a HashSet in the implementation.
+
+Example:
+
+Input: input = "test123", allowed = "abcdefghijklmnopqrstuvwxyz1234567890"
+Output: true (All characters in "test123" are allowed.)
+
+Input: input = "test#123", allowed = "abcdefghijklmnopqrstuvwxyz1234567890"
+Output: false (# is not an allowed character.)
+
+import java.util.HashSet;
+import java.util.Set;
+
+public class InputValidator {
+  public static boolean isValidInput(String input, String allowed) {
+    if (input == null || allowed == null) {
+      throw new IllegalArgumentException("Invalid input");
+    }
+    Set<Character> allowedSet = new HashSet<>();
+    for (char c : allowed.toCharArray()) {
+      allowedSet.add(c);
+    }
+
+    for (char c : input.toCharArray()) {
+      if (!allowedSet.contains(c)) {
+        return false;
+      }
+    }
+    return true;
+  }
+}
+
+
+public class Main {
+    public static void main(String[] args) {
+      // TEST
+      assert InputValidator.isValidInput("test123", "abcdefghijklmnopqrstuvwxyz1234567890");
+      // TEST_END
+  
+      // TEST
+      assert !InputValidator.isValidInput("test#123", "abcdefghijklmnopqrstuvwxyz1234567890");
+      // TEST_END
+  
+      // TEST
+      assert InputValidator.isValidInput("", "abcdefghijklmnopqrstuvwxyz1234567890");
+      // TEST_END
+  
+      // TEST
+      assert InputValidator.isValidInput("", "");
+      // TEST_END
+  
+      // TEST
+      try {
+        InputValidator.isValidInput(null, "abcdefghijklmnopqrstuvwxyz1234567890");
+        assert false;
+      } catch (IllegalArgumentException e) {
+        assert true;
+      }
+      // TEST_END
+  
+      // TEST
+      try {
+        InputValidator.isValidInput("", null);
+        assert false;
+      } catch (IllegalArgumentException e) {
+        assert true;
+      }
+      // TEST_END
+    }
+  }
+
+------------------------------------------------------------------------------------------------------------------------
+8- Reverse Words in a String
+
+An online publishing systems wants to reverse headlines to create catch phrases. 
+Implement a function reverseWords(String s) that returns a string where the words (sequences of characters separated by spaces) 
+are reversed in order.
+
+Example:
+
+Input: "I am hungry"
+Output: "hungry am I"
+
+
+public class WordsReverser {
+    public static String reverseWords(String s) {
+      if (s == null) {
+        throw new IllegalArgumentException("Input cannot be null");
+      }
+      String[] words = s.trim().split("\\s+");
+      StringBuilder reversed = new StringBuilder();
+      for (int i = words.length - 1; i >= 0; i--) {
+        reversed.append(words[i]);
+        if (i > 0) {
+          reversed.append(" ");
+        }
+      }
+      return reversed.toString();
+    }
+  }
+
+  public class Main {
+    public static void main(String[] args) {
+      // TEST
+      assert WordsReverser.reverseWords("I am hungry").equals("hungry am I");
+      // TEST_END
+  
+      // TEST
+      assert WordsReverser.reverseWords("   Hello World  ").equals("World Hello");
+      // TEST_END
+  
+      // TEST
+      assert WordsReverser.reverseWords("Hello      World").equals("World Hello");
+      // TEST_END
+  
+      // TEST
+      assert WordsReverser.reverseWords("").equals("");
+      // TEST_END
+  
+      // TEST
+      try {
+        WordsReverser.reverseWords(null);
+        assert false;
+      } catch (IllegalArgumentException e) {
+        assert true;
+      }
+      // TEST_END
+    }
+  }
+
+------------------------------------------------------------------------------------------------------------------------
+9- Longest Common Prefix
+
+Implement a function called longestCommonPrefix(String[] strs) that returns the longest common prefix string present in the array,
+given an array of mutile filenames. The function will help in grouping files under common categories based on their names.
+If there is no common prefix, return an empty string.
+
+Example:
+
+Input: ["magnesium","maginificent","maggot"]
+Output: "mag"
+
+Input: ["dog","cow","car"]
+Output: ""
+(There is no common prefix among the input strings.)
+
+public class StringArrayLongestCommonPrefix {
+    public static String longestCommonPrefix(String[] strs) {
+      if (strs == null) {
+        throw new IllegalArgumentException("Invalid input");
+      }
+      if (strs.length == 0) {
+        return "";
+      }
+      String prefix = strs[0];
+      for (int i = 1; i < strs.length; i++) {
+        while (strs[i].indexOf(prefix) != 0) {
+          prefix = prefix.substring(0, prefix.length() - 1);
+          if (prefix.isEmpty()) {
+            return "";
+          }
+        }
+      }
+      return prefix;
+    }
+  }
+
+  public class Main {
+    public static void main(String[] args) {
+      // TEST
+      assert StringArrayLongestCommonPrefix.longestCommonPrefix(new String[]{"magnesium", "maginificent", "maggot"}).equals("mag");
+      // TEST_END
+  
+      // TEST
+      assert StringArrayLongestCommonPrefix.longestCommonPrefix(new String[]{"dog", "cow", "car"}).equals("");
+      // TEST_END
+  
+      // TEST
+      assert StringArrayLongestCommonPrefix.longestCommonPrefix(new String[]{""}).equals("");
+      // TEST_END
+  
+      // TEST
+      try {
+        StringArrayLongestCommonPrefix.longestCommonPrefix(null);
+        assert false;
+      } catch (IllegalArgumentException e) {
+        assert true;
+      }
+      // TEST_END
+    }
+  }
+  
+------------------------------------------------------------------------------------------------------------------------
+10-
+  
+
+------------------------------------------------------------------------------------------------------------------------
+11 - 
+
+------------------------------------------------------------------------------------------------------------------------
+12- 
+
+------------------------------------------------------------------------------------------------------------------------
+13 -
+
+------------------------------------------------------------------------------------------------------------------------
+14 -
+
+------------------------------------------------------------------------------------------------------------------------
+15 -
