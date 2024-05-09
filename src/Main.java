@@ -1,42 +1,38 @@
 
-import com.powem.inv.arrays.ArrayRotatorForShifts;
-import com.powem.inv.arrays.MissingNumberFinder;
-import com.powem.inv.dynamicprogramming.NumbersInSeries;
-import com.powem.inv.hashtables.TransfersFrequencyCount;
-import com.powem.inv.linkedlist.DuplicateEventRemoval;
-import com.powem.inv.linkedlist.EventPrioritySort;
-import com.powem.inv.linkedlist.TransactionsMergeSortedList;
-import com.powem.inv.stacks.MaximumNestingDepth;
-import com.powem.inv.strings.Palindrome;
 import com.powem.inv.trees.TransactionsBSTBalancer;
-import java.util.HashMap;
-import java.util.List;
 
 public class Main {
   public static void main(String[] args) {
     // TEST
-    assert NumbersInSeries.findNextValueInSequence(0) == 0;
+    TransactionsBSTBalancer balancer = new TransactionsBSTBalancer();
+    TransactionsBSTBalancer.TreeNode root = balancer.createTreeNode(5);
+    root.right = balancer.createTreeNode(10);
+    root.right.right = balancer.createTreeNode(15);
+    root.right.right.right = balancer.createTreeNode(20);
+
+    TransactionsBSTBalancer.TreeNode result1 = balancer.balanceBST(root);
+    assert result1.val == 10;
     // TEST_END
 
     // TEST
-    assert NumbersInSeries.findNextValueInSequence(1) == 1;
+    assert result1.left.val == 5;
     // TEST_END
 
     // TEST
-    assert NumbersInSeries.findNextValueInSequence(2) == 1;
+    assert result1.right.val == 15;
     // TEST_END
 
     // TEST
-    assert NumbersInSeries.findNextValueInSequence(3) == 2;
+    assert result1.right.right.val == 20;
     // TEST_END
 
     // TEST
-    assert NumbersInSeries.findNextValueInSequence(4) == 3;
+    assert balancer.balanceBST(null) == null;
     // TEST_END
 
     // TEST
     try {
-      NumbersInSeries.findNextValueInSequence(-18);
+      TransactionsBSTBalancer.TreeNode root2 = balancer.createTreeNode(-5);
       assert false;
     } catch (IllegalArgumentException e) {
       assert true;

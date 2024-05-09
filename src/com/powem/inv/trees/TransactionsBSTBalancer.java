@@ -5,7 +5,7 @@ package com.powem.inv.trees;
 //A financial software system stores transaction data in a binary search tree (BST)
 //    where each node represents a transaction amount. Over time, the BST may
 //    become unbalanced due to frequent additions and deletions, leading to
-//    inefficient operations. Your task is to create a method that re-balances the tree
+//    inefficient operations. Create a method that re-balances the tree
 //    to ensure optimal operation times for searches, insertions, and deletions.
 //
 // Instructions:
@@ -33,6 +33,7 @@ package com.powem.inv.trees;
 //   5    15
 //            \
 //              20
+// Constraints: The values in the nodes cannot be negative.
 
 
 import java.util.ArrayList;
@@ -52,6 +53,9 @@ public class TransactionsBSTBalancer {
   }
 
   public TreeNode createTreeNode(int x) {
+    if (x < 0) {
+      throw new IllegalArgumentException("Node value cannot be negative");
+    }
     return new TreeNode(x);
   }
 
@@ -94,12 +98,30 @@ public class TransactionsBSTBalancer {
 //
 //TransactionsBSTBalancer.TreeNode result1 = balancer.balanceBST(root);
 //    assert result1.val == 10;
+//    // TEST_END
+//
+//    // TEST
 //    assert result1.left.val == 5;
+//    // TEST_END
+//
+//    // TEST
 //    assert result1.right.val == 15;
+//    // TEST_END
+//
+//    // TEST
 //    assert result1.right.right.val == 20;
 //    // TEST_END
 //
 //    // TEST
 //    assert balancer.balanceBST(null) == null;
+//    // TEST_END
+//
+//    // TEST
+//    try {
+//TransactionsBSTBalancer.TreeNode root2 = balancer.createTreeNode(-5);
+//      assert false;
+//          } catch (IllegalArgumentException e) {
+//    assert true;
+//    }
 //// TEST_END
 //}
