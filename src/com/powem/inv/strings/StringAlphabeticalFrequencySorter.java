@@ -34,21 +34,21 @@ public class StringAlphabeticalFrequencySorter {
 
     List<Entry<Character, Integer>> list = new ArrayList<>(frequencyMap.entrySet());
 
-    Collections.sort(list, (a, b) -> {
-      if (a.getValue().equals(b.getValue())) {
-        return a.getKey().compareTo(b.getKey());
+    Collections.sort(list, (string1, string2) -> {
+      if (string1.getValue().equals(string2.getValue())) {
+        return string1.getKey().compareTo(string2.getKey());
       } else {
-        return b.getValue() - a.getValue();
+        return string2.getValue() - string1.getValue();
       }
     });
 
-    StringBuilder sb = new StringBuilder();
+    StringBuilder stringBuilder = new StringBuilder();
     for (Map.Entry<Character, Integer> entry : list) {
       for (int i = 0; i < entry.getValue(); i++) {
-        sb.append(entry.getKey());
+        stringBuilder.append(entry.getKey());
       }
     }
-    return sb.toString();
+    return stringBuilder.toString();
   }
 }
 

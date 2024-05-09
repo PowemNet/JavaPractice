@@ -199,54 +199,57 @@ public class MeetingRoomScheduler {
   }
 }
 
+import java.time.format.DateTimeParseException;
+import java.util.List;
+
 public class Main {
-    public static void main(String[] args) {
-      // TEST
-      Meeting meeting1 = new Meeting("09:00", 2);
-      meeting1.next = new Meeting("10:00", 1);
-      meeting1.next.next = new Meeting("11:00", 2);
-      List<String> result1 = MeetingRoomScheduler.detectConflicts(meeting1);
-      assert result1.size() == 1;
-      // TEST_END
-  
-      // TEST
-      assert result1.get(0).equals("Conflict between 09:00 (2 hours) and 10:00 (1 hours)");
-      // TEST_END
-  
-      // TEST
-      Meeting meeting2 = new Meeting("09:00", 2);
-      List<String> result2 = MeetingRoomScheduler.detectConflicts(meeting2);
-      assert result2.isEmpty();
-      // TEST_END
-  
-      // TEST
-      try {
-        Meeting meeting3 = new Meeting("", 2);
-        assert false;
-      } catch (IllegalArgumentException e) {
-        assert true;
-      }
-      // TEST_END
-  
-      // TEST
-      try {
-        Meeting meeting4 = new Meeting("09:00", -1);
-        assert false;
-      } catch (IllegalArgumentException e) {
-        assert true;
-      }
-      // TEST_END
-  
-      // TEST
-      try {
-        Meeting meeting4 = new Meeting("09:00kkk", 1);
-        assert false;
-      } catch (DateTimeParseException e) {
-        assert true;
-      }
-      // TEST_END
+  public static void main(String[] args) {
+    // TEST
+    Meeting meeting1 = new MeetingRoomScheduler.Meeting("09:00", 2);
+    meeting1.next = new Meeting("10:00", 1);
+    meeting1.next.next = new Meeting("11:00", 2);
+    List<String> result1 = MeetingRoomScheduler.detectConflicts(meeting1);
+    assert result1.size() == 1;
+    // TEST_END
+
+    // TEST
+    assert result1.get(0).equals("Conflict between 09:00 (2 hours) and 10:00 (1 hours)");
+    // TEST_END
+
+    // TEST
+    Meeting meeting2 = new Meeting("09:00", 2);
+    List<String> result2 = MeetingRoomScheduler.detectConflicts(meeting2);
+    assert result2.isEmpty();
+    // TEST_END
+
+    // TEST
+    try {
+      Meeting meeting3 = new MeetingRoomScheduler.Meeting("", 2);
+      assert false;
+    } catch (IllegalArgumentException e) {
+      assert true;
     }
+    // TEST_END
+
+    // TEST
+    try {
+      Meeting meeting4 = new MeetingRoomScheduler.Meeting("09:00", -1);
+      assert false;
+    } catch (IllegalArgumentException e) {
+      assert true;
+    }
+    // TEST_END
+
+    // TEST
+    try {
+      Meeting meeting4 = new MeetingRoomScheduler.Meeting("09:00kkk", 1);
+      assert false;
+    } catch (DateTimeParseException e) {
+      assert true;
+    }
+    // TEST_END
   }
+}
   
 
 ------------------------------------------------------------------------------------------------------------------------
@@ -427,48 +430,64 @@ public class StringAlphabeticalFrequencySorter {
 
     List<Entry<Character, Integer>> list = new ArrayList<>(frequencyMap.entrySet());
 
-    Collections.sort(list, (a, b) -> {
-      if (a.getValue().equals(b.getValue())) {
-        return a.getKey().compareTo(b.getKey());
+    Collections.sort(list, (string1, string2) -> {
+      if (string1.getValue().equals(string2.getValue())) {
+        return string1.getKey().compareTo(string2.getKey());
       } else {
-        return b.getValue() - a.getValue();
+        return string2.getValue() - string1.getValue();
       }
     });
 
-    StringBuilder sb = new StringBuilder();
+    StringBuilder stringBuilder = new StringBuilder();
     for (Map.Entry<Character, Integer> entry : list) {
       for (int i = 0; i < entry.getValue(); i++) {
-        sb.append(entry.getKey());
+        stringBuilder.append(entry.getKey());
       }
     }
-    return sb.toString();
+    return stringBuilder.toString();
   }
 }
 
 public class Main {
-    public static void main(String[] args) {
-      // TEST
-      assert StringAlphabeticalFrequencySorter.frequencySort("flee").equals("eefl");
-      // TEST_END
-  
-      // TEST
-      assert StringAlphabeticalFrequencySorter.frequencySort("tree").equals("eert");
-      // TEST_END
-  
-      // TEST
-      assert StringAlphabeticalFrequencySorter.frequencySort("Abb").equals("bbA");
-      // TEST_END
-  
-      // TEST
-      try {
-        StringAlphabeticalFrequencySorter.frequencySort(null);
-        assert false;
-      } catch (IllegalArgumentException e) {
-        assert true;
-      }
-      // TEST_END
+  public static void main(String[] args) {
+    // TEST
+    assert StringAlphabeticalFrequencySorter.frequencySort("flee").equals("eefl");
+    // TEST_END
+
+    // TEST
+    assert StringAlphabeticalFrequencySorter.frequencySort("fleet").equals("eeflt");
+    // TEST_END
+
+    // TEST
+    assert StringAlphabeticalFrequencySorter.frequencySort("fle et").equals("ee flt");
+    // TEST_END
+
+    // TEST
+    assert StringAlphabeticalFrequencySorter.frequencySort("fle*et").equals("ee*flt");
+    // TEST_END
+
+    // TEST
+    assert StringAlphabeticalFrequencySorter.frequencySort("fle4et").equals("ee4flt");
+    // TEST_END
+
+    // TEST
+    assert StringAlphabeticalFrequencySorter.frequencySort("tree").equals("eert");
+    // TEST_END
+
+    // TEST
+    assert StringAlphabeticalFrequencySorter.frequencySort("Abb").equals("bbA");
+    // TEST_END
+
+    // TEST
+    try {
+      StringAlphabeticalFrequencySorter.frequencySort(null);
+      assert false;
+    } catch (IllegalArgumentException e) {
+      assert true;
     }
+    // TEST_END
   }
+}
 
 ------------------------------------------------------------------------------------------------------------------------
 7- Validate String with Allowed Characters
@@ -685,3 +704,116 @@ public class StringArrayLongestCommonPrefix {
 
 ------------------------------------------------------------------------------------------------------------------------
 15 -
+
+------------------------------------------------------------------------------------------------------------------------
+extra
+
+A financial software system stores transaction data in a binary search tree (BST) where each node represents a transaction 
+amount. Over time, the BST may become unbalanced due to frequent additions and deletions, leading to inefficient operations. 
+Create a method that re-balances the tree to ensure optimal operation times for searches, insertions, and deletions.
+
+Instructions: Implement a function balanceBST(TreeNode root) that takes the root of a potentially unbalanced BST and 
+returns the root of a balanced BST. Do not create new nodes; you should rearrange the existing nodes. Assume the BST 
+does not contain duplicate values. 
+
+Example: where left node of i = 2i+1 and right node of i = 2i + 2 
+Input: BST (unbalanced): [5, null, 10, null, null, null, 15, null, null, null, null, null, null, null, 20]
+
+Output:
+BST (balanced): [10, 5, 15, null, null, null, 20]
+
+Constraints: The values in the nodes cannot be negative.
+
+
+import java.util.ArrayList;
+import java.util.List;
+
+public class TransactionsBSTBalancer {
+
+  public class TreeNode {
+
+    public int val;
+    public TreeNode left;
+    public TreeNode right;
+
+    TreeNode(int x) {
+      val = x;
+    }
+  }
+
+  public TreeNode createTreeNode(int x) {
+    if (x < 0) {
+      throw new IllegalArgumentException("Node value cannot be negative");
+    }
+    return new TreeNode(x);
+  }
+
+  public TreeNode balanceBST(TreeNode root) {
+    if (root == null) {
+      return null;
+    }
+    List<TreeNode> nodes = new ArrayList<>();
+    inorderTraversal(root, nodes);
+    return buildBalancedBST(nodes, 0, nodes.size() - 1);
+  }
+
+  private void inorderTraversal(TreeNode node, List<TreeNode> nodes) {
+    if (node != null) {
+      inorderTraversal(node.left, nodes);
+      nodes.add(node);
+      inorderTraversal(node.right, nodes);
+    }
+  }
+
+  private TreeNode buildBalancedBST(List<TreeNode> nodes, int start, int end) {
+    if (start > end) {
+      return null;
+    }
+    int mid = (start + end) / 2;
+    TreeNode node = nodes.get(mid);
+    node.left = buildBalancedBST(nodes, start, mid - 1);
+    node.right = buildBalancedBST(nodes, mid + 1, end);
+    return node;
+  }
+}
+
+
+public class Main {
+  public static void main(String[] args) {
+    // TEST
+    TransactionsBSTBalancer balancer = new TransactionsBSTBalancer();
+    TransactionsBSTBalancer.TreeNode root = balancer.createTreeNode(5);
+    root.right = balancer.createTreeNode(10);
+    root.right.right = balancer.createTreeNode(15);
+    root.right.right.right = balancer.createTreeNode(20);
+
+    TransactionsBSTBalancer.TreeNode result1 = balancer.balanceBST(root);
+    assert result1.val == 10;
+    // TEST_END
+
+    // TEST
+    assert result1.left.val == 5;
+    // TEST_END
+
+    // TEST
+    assert result1.right.val == 15;
+    // TEST_END
+
+    // TEST
+    assert result1.right.right.val == 20;
+    // TEST_END
+
+    // TEST
+    assert balancer.balanceBST(null) == null;
+    // TEST_END
+
+    // TEST
+    try {
+      TransactionsBSTBalancer.TreeNode root2 = balancer.createTreeNode(-5);
+      assert false;
+    } catch (IllegalArgumentException e) {
+      assert true;
+    }
+    // TEST_END
+  }
+}

@@ -14,6 +14,7 @@ package com.powem.inv.strings;
 //Input: ["dog","cow","car"]
 //Output: ""
 //    (There is no common prefix among the input strings.)
+//Constraint: Empty str
 
 
 public class StringArrayLongestCommonPrefix {
