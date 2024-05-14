@@ -4,6 +4,9 @@ package com.powem.inv.linkedlist;
 
 //Meeting times are managed in a linked list where each node represents a
 //    meeting's ' start time and duration.
+//Each input has the startTime and duration eg ({startTime1} ({duration1} hours)-> {startTime2} ({duration2} hours))
+//No startTime can be repeated.
+//
 //    Implement a function detectConflicts(Meeting head) that checks for any overlapping
 //    meetings and returns a list of strings describing each conflict.
 //    Each conflict should be identified by the overlapping meeting times and should list the affected meetings.
@@ -13,6 +16,7 @@ package com.powem.inv.linkedlist;
 //    Output: List of Conflicts: ["Conflict between 09:00 (2 hours) and 10:00 (1 hours)"]
 
 import java.time.LocalTime;
+import java.time.format.DateTimeParseException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -62,10 +66,10 @@ public class MeetingRoomScheduler {
 }
 
 //public static void tests() {
-// TEST
-//Meeting meeting1 = new Meeting("09:00", 2);
-//meeting1.next = new Meeting("10:00", 1);
-//meeting1.next.next = new Meeting("11:00", 2);
+//// TEST
+//Meeting meeting1 = new MeetingRoomScheduler.Meeting("09:00", 2);
+//meeting1.next = new MeetingRoomScheduler.Meeting("10:00", 1);
+//meeting1.next.next = new MeetingRoomScheduler.Meeting("11:00", 2);
 //List<String> result1 = MeetingRoomScheduler.detectConflicts(meeting1);
 //    assert result1.size() == 1;
 //    // TEST_END
@@ -75,14 +79,14 @@ public class MeetingRoomScheduler {
 //// TEST_END
 //
 //// TEST
-//Meeting meeting2 = new Meeting("09:00", 2);
+//Meeting meeting2 = new MeetingRoomScheduler.Meeting("09:00", 2);
 //List<String> result2 = MeetingRoomScheduler.detectConflicts(meeting2);
 //    assert result2.isEmpty();
 //// TEST_END
 //
 //// TEST
 //    try {
-//Meeting meeting3 = new Meeting("", 2);
+//Meeting meeting3 = new MeetingRoomScheduler.Meeting("", 2);
 //      assert false;
 //          } catch (IllegalArgumentException e) {
 //    assert true;
@@ -91,7 +95,7 @@ public class MeetingRoomScheduler {
 //
 //    // TEST
 //    try {
-//Meeting meeting4 = new Meeting("09:00", -1);
+//Meeting meeting4 = new MeetingRoomScheduler.Meeting("09:00", -1);
 //      assert false;
 //          } catch (IllegalArgumentException e) {
 //    assert true;
@@ -100,7 +104,7 @@ public class MeetingRoomScheduler {
 //
 //    // TEST
 //    try {
-//Meeting meeting4 = new Meeting("09:00kkk", 1);
+//Meeting meeting4 = new MeetingRoomScheduler.Meeting("09:00kkk", 1);
 //      assert false;
 //          } catch (
 //DateTimeParseException e) {

@@ -1,7 +1,7 @@
 package com.powem.inv.strings;
 
 //Frequency Sorting of Characters
-
+//
 //A text analysis tool needs to sort the characters of a string by their
 //frequency in descending order. If multiple characters have the same frequency, they should be sorted in alphabetical
 //order.
@@ -14,6 +14,7 @@ package com.powem.inv.strings;
 //Input: "flee"
 //Output: "eefl" (Both 'e' characters appear twice, and 'f' and 'l' each appear once, but 'e' comes
 //before 'f' and 'l' in frequency and then alphabetically.)
+//The input cannot be an empty String
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -24,8 +25,8 @@ import java.util.Map.Entry;
 
 public class StringAlphabeticalFrequencySorter {
   public static String frequencySort(String s) {
-    if (s == null) {
-      throw new IllegalArgumentException("Input cannot be null");
+    if (s == null || s.isEmpty()) {
+      throw new IllegalArgumentException("Input cannot be null or empty");
     }
     Map<Character, Integer> frequencyMap = new HashMap<>();
     for (char c : s.toCharArray()) {
@@ -42,13 +43,13 @@ public class StringAlphabeticalFrequencySorter {
       }
     });
 
-    StringBuilder stringBuilder = new StringBuilder();
+    StringBuilder output = new StringBuilder();
     for (Map.Entry<Character, Integer> entry : list) {
       for (int i = 0; i < entry.getValue(); i++) {
-        stringBuilder.append(entry.getKey());
+        output.append(entry.getKey());
       }
     }
-    return stringBuilder.toString();
+    return output.toString();
   }
 }
 
@@ -70,6 +71,15 @@ public class StringAlphabeticalFrequencySorter {
 //          StringAlphabeticalFrequencySorter.frequencySort(null);
 //        assert false;
 //            } catch (IllegalArgumentException e) {
+//    assert true;
+//    }
+//    // TEST_END
+//
+//    // TEST
+//    try {
+//    StringAlphabeticalFrequencySorter.frequencySort("");
+//      assert false;
+//          } catch (IllegalArgumentException e) {
 //    assert true;
 //    }
 //// TEST_END
