@@ -1,42 +1,34 @@
 
-import com.powem.inv.trees.TransactionsBSTBalancer;
+import com.powem.inv.strings.StringToInteger;
 
 public class Main {
   public static void main(String[] args) {
     // TEST
-    TransactionsBSTBalancer balancer = new TransactionsBSTBalancer();
-    TransactionsBSTBalancer.TreeNode root = balancer.createTreeNode(5);
-    root.right = balancer.createTreeNode(10);
-    root.right.right = balancer.createTreeNode(15);
-    root.right.right.right = balancer.createTreeNode(20);
-
-    TransactionsBSTBalancer.TreeNode result1 = balancer.balanceBST(root);
-    assert result1.val == 10;
+    assert StringToInteger.extractIntegerFromUserInput("   ") == 0;
     // TEST_END
 
     // TEST
-    assert result1.left.val == 5;
+    assert StringToInteger.extractIntegerFromUserInput(null) == 0;
     // TEST_END
 
     // TEST
-    assert result1.right.val == 15;
+    assert StringToInteger.extractIntegerFromUserInput("   -23") == -23;
     // TEST_END
 
     // TEST
-    assert result1.right.right.val == 20;
+    assert StringToInteger.extractIntegerFromUserInput("some text 2") == 0;
     // TEST_END
 
     // TEST
-    assert balancer.balanceBST(null) == null;
+    assert StringToInteger.extractIntegerFromUserInput("2 some text") == 2;
     // TEST_END
 
     // TEST
-    try {
-      TransactionsBSTBalancer.TreeNode root2 = balancer.createTreeNode(-5);
-      assert false;
-    } catch (IllegalArgumentException e) {
-      assert true;
-    }
+    assert StringToInteger.extractIntegerFromUserInput("2 some text 2") == 2;
+    // TEST_END
+
+    // TEST
+    assert StringToInteger.extractIntegerFromUserInput("-891283472332") == -2147483648;
     // TEST_END
   }
 }
