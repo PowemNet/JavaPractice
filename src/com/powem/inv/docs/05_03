@@ -1,0 +1,1855 @@
+1- Implement a Basic String Tokenizer
+
+Create a function called  tokenizeWords(String s, String delimiters) which splits the
+string s into tokens based on the characters found in the delimiters string.
+
+Example:
+
+Input: s = "I, want! to Sleep.", delimiters = " ,!."
+Output: ["I", "want", "to", "Sleep"]
+
+Constraint: The inputs cannot be null or empty
+
+
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
+
+public class StringTokenizer {
+  public static String[] tokenizeWords(String s, String delimiters) {
+    if (s == null || s.isEmpty() || delimiters == null || delimiters.isEmpty()) {
+      throw new IllegalArgumentException("Invalid input");
+    }
+
+    Set<Character> delimiterSet = new HashSet<>();
+    for (char c : delimiters.toCharArray()) {
+      delimiterSet.add(c);
+    }
+
+    List<String> tokens = new ArrayList<>();
+    StringBuilder token = new StringBuilder();
+
+    for (char c : s.toCharArray()) {
+      if (delimiterSet.contains(c)) {
+        if (token.length() > 0) {
+          tokens.add(token.toString());
+          token = new StringBuilder();
+        }
+      } else {
+        token.append(c);
+      }
+    }
+
+    if (token.length() > 0) {
+      tokens.add(token.toString());
+    }
+
+    return tokens.toArray(new String[0]);
+  }
+}
+
+import java.util.Arrays;
+import java.util.List;
+
+public class Main {
+  public static void main(String[] args) {
+    // TEST
+    List<String> result1 = Arrays.asList(StringTokenizer.tokenizeWords("I, want! to Sleep.", " ,!."));
+    assert result1.size() == 4;
+    // TEST_END
+
+    // TEST
+    assert result1.get(0).equals("I");
+    // TEST_END
+
+    // TEST
+    assert result1.get(1).equals("want");
+    // TEST_END
+
+    // TEST
+    assert result1.get(2).equals("to");
+    // TEST_END
+
+    // TEST
+    assert result1.get(3).equals("Sleep");
+    // TEST_END
+
+    // TEST
+    try {
+      StringTokenizer.tokenizeWords(null, " ,!.");
+      assert false;
+    } catch (IllegalArgumentException e) {
+      assert true;
+    }
+    // TEST_END
+
+    // TEST
+    try {
+      StringTokenizer.tokenizeWords("", " ,!.");
+      assert false;
+    } catch (IllegalArgumentException e) {
+      assert true;
+    }
+    // TEST_END
+
+    // TEST
+    try {
+      StringTokenizer.tokenizeWords(null, null);
+      assert false;
+    } catch (IllegalArgumentException e) {
+      assert true;
+    }
+    // TEST_END
+  }
+}
+
+------------------------------------------------------------------------------------------------------------------------
+2-
+
+Problem: Case Insensitive Search in a String
+
+In a document management system, users need to search for terms within documents
+regardless of case sensitivity so as to locate all instances of
+a word or phrase without missing any due to variations in capitalization.
+
+Create a function countCaseInsensitiveMatches(String text, String query) that
+returns the number of times a query appears in a text string, ignoring case differences.
+
+Example:
+
+Input: text = "Invisible is so cool that you feel invisible when you think about it and all that invisibility.", query = "invisible"
+Output: 2 (The word "invisible" appears twice, ignoring case.)
+if the text or query is null, return 0
+if both text and query are empty, return 0
+
+public class CaseInsensitiveSearch {
+    public static int countCaseInsensitiveMatches(String text, String query) {
+      if (text == null || query == null) {
+        return 0;
+      }
+  
+      if (text.isEmpty() || query.isEmpty()) {
+        return 0;
+      }
+      String normalizedText = text.toLowerCase();
+      String normalizedQuery = query.toLowerCase();
+  
+      int index = 0, count = 0;
+      while (true) {
+        index = normalizedText.indexOf(normalizedQuery, index);
+  
+        if (index == -1) {
+          break;
+        }
+        count++;
+        index += normalizedQuery.length();
+      }
+  
+      return count;
+    }
+  }
+
+
+public class Main {
+    public static void main(String[] args) {
+      // TEST
+      assert CaseInsensitiveSearch.countCaseInsensitiveMatches(
+          "Invisible is so cool that you feel invisible when you think about it and all that invisibility.", "invisible") == 2;
+      // TEST_END
+  
+      // TEST
+      assert CaseInsensitiveSearch.countCaseInsensitiveMatches(
+          "New new new new.", "new") == 4;
+      // TEST_END
+  
+      // TEST
+      assert CaseInsensitiveSearch.countCaseInsensitiveMatches(
+          "", "invisible") == 0;
+      // TEST_END
+  
+      // TEST
+      assert CaseInsensitiveSearch.countCaseInsensitiveMatches(
+          "", null) == 0;
+      // TEST_END
+  
+      // TEST
+      assert CaseInsensitiveSearch.countCaseInsensitiveMatches(
+          "", "") == 0;
+      // TEST_END
+  
+      // TEST
+      assert CaseInsensitiveSearch.countCaseInsensitiveMatches(
+          "new", "") == 0;
+      // TEST_END
+    }
+  }
+  
+
+
+------------------------------------------------------------------------------------------------------------------------
+3- Remove All Adjacent Duplicates in String
+
+Scenario:
+
+In an application for editing and formatting text, a feature is needed to clean up 
+user-submitted content by removing consecutive, repeating characters. Implement a 
+function that removes all adjacent duplicates from a string recursively until no 
+adjacent duplicates are left.
+
+The function should be called removeDuplicates(String s) and it should returns 
+a string after all consecutive duplicates have been removed.
+
+Example:
+
+Input: "deedfg"
+Output: "fg" (The pairs "ee" and "dd" are removed, leaving "fg".)
+
+public class RemoveStringDuplicates {
+    public static String removeDuplicates(String s) {
+      if (s == null) {
+        throw new IllegalArgumentException("Input cannot be null");
+      }
+      StringBuilder sb = new StringBuilder();
+      for (char c : s.toCharArray()) {
+        int length = sb.length();
+        if (length > 0 && sb.charAt(length - 1) == c) {
+          sb.deleteCharAt(length - 1);
+        } else {
+          sb.append(c);
+        }
+      }
+      return sb.toString();
+    }
+  }
+
+public class Main {
+    public static void main(String[] args) {
+      // TEST
+      assert RemoveStringDuplicates.removeDuplicates("deedfg").equals("fg");
+      // TEST_END
+  
+      // TEST
+      assert RemoveStringDuplicates.removeDuplicates("azxxzy").equals("ay");
+      // TEST_END
+  
+      // TEST
+      assert RemoveStringDuplicates.removeDuplicates("").equals("");
+      // TEST_END
+  
+      // TEST
+      try {
+        RemoveStringDuplicates.removeDuplicates(null);
+        assert false;
+      } catch (IllegalArgumentException e) {
+        assert true;
+      }
+      // TEST_END
+    }
+  }
+
+------------------------------------------------------------------------------------------------------------------------
+4- Decode a Specially Encoded String
+
+Given a messaging system where strings have been encoded where each segment of the string starts with the
+length of the word followed by a ‘#’ and then the word itself. Implement a method  decode(String s) to decode
+this encoded string back into a list of the original strings.
+
+Example:
+
+Decode Input: “5#Hello5#World”
+Decode Output: [“Hello”, “World”]
+
+
+import java.util.ArrayList;
+import java.util.List;
+
+public class StringDecoder {
+  public static List<String> decode(String s) {
+    List<String> decoded = new ArrayList<>();
+    int i = 0;
+    while (i < s.length()) {
+      int hashPos = s.indexOf('#', i);
+      if (hashPos == -1) {
+        throw new IllegalArgumentException("Invalid encoding: '#' not found.");
+      }
+      int size;
+      try {
+        size = Integer.parseInt(s.substring(i, hashPos));
+      } catch (NumberFormatException e) {
+        throw new IllegalArgumentException("Invalid encoding: Expected a number before '#'.", e);
+      }
+
+      if (hashPos + 1 + size > s.length()) {
+        throw new IllegalArgumentException("Invalid encoding: Specified length " + size +
+            " exceeds remaining string length.");
+      }
+
+      String word = s.substring(hashPos + 1, hashPos + 1 + size);
+      if (word.length() != size) {
+        throw new IllegalArgumentException("Invalid encoding: Specified length " + size +
+            " does not match the length of the word '" + word + "'.");
+      }
+      decoded.add(word);
+      i = hashPos + 1 + size;
+    }
+    return decoded;
+  }
+}
+
+
+import java.util.List;
+
+public class Main {
+  public static void main(String[] args) {
+    // TEST
+    assert StringDecoder.decode("5#Hello5#World").equals(List.of("Hello", "World"));
+    // TEST_END
+
+    // TEST
+    assert StringDecoder.decode("1#H5#World").equals(List.of("H", "World"));
+    // TEST_END
+
+    // TEST
+    try {
+      StringDecoder.decode("1#Hello5#World");
+      assert false;
+    } catch (IllegalArgumentException e) {
+      assert true;
+    }
+    // TEST_END
+
+    // TEST
+    try {
+      StringDecoder.decode("1Hello5");
+      assert false;
+    } catch (IllegalArgumentException e) {
+      assert true;
+    }
+    // TEST_END
+
+    // TEST
+    try {
+      StringDecoder.decode("1#Hello5");
+      assert false;
+    } catch (IllegalArgumentException e) {
+      assert true;
+    }
+    // TEST_END
+
+    // TEST
+    try {
+      StringDecoder.decode("1#Hello5");
+      assert false;
+    } catch (IllegalArgumentException e) {
+      assert true;
+    }
+    // TEST_END
+
+    // TEST
+    try {
+      StringDecoder.decode("#5Hell");
+      assert false;
+    } catch (IllegalArgumentException e) {
+      assert true;
+    }
+    // TEST_END
+  }
+}
+
+
+------------------------------------------------------------------------------------------------------------------------
+5- Extract Unique Words from a Sentence
+
+
+To indexing content in a text analysis tool, create a function called extractUniqueWords(String sentence) which
+returns a list of unique words from the given sentence. Words should be considered case-insensitive, and the 
+function should handle punctuation and whitespace effectively (i.e. they should be ignored).
+
+Example:
+
+Input: “Hello, hello? World! This is a test. A TEST.”
+Output: [“hello”, “world”, “this”, “is”, “a”, “test”]
+
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.LinkedHashSet;
+import java.util.List;
+import java.util.Set;
+
+public class ExtractUniqueWords {
+  public static List<String> extractUniqueWords(String sentence) {
+    if (sentence == null || sentence.isEmpty()) {
+      throw new IllegalArgumentException("Input sentence is null or empty.");
+    }
+
+    sentence = sentence.toLowerCase();
+    sentence = sentence.replaceAll("[^a-zA-Z0-9\\s]", " ");
+    String[] words = sentence.split("\\s+");
+    Set<String> uniqueWords = new LinkedHashSet<>(Arrays.asList(words));
+    return new ArrayList<>(uniqueWords);
+  }
+}
+
+import java.util.List;
+
+public class Main {
+  public static void main(String[] args) {
+    // TEST
+    assert ExtractUniqueWords.extractUniqueWords("Hello, hello? World! This is a test. A TEST.")
+        .equals(List.of("hello", "world", "this", "is", "a", "test"));
+    // TEST_END
+
+    // TEST
+    assert ExtractUniqueWords.extractUniqueWords("Hello,     .p").equals(List.of("hello", "p"));
+    // TEST_END
+
+    // TEST
+    assert ExtractUniqueWords.extractUniqueWords("Hello123,  World!").equals(List.of("hello123", "world"));
+    // TEST_END
+
+    // TEST
+    assert ExtractUniqueWords.extractUniqueWords("123,  World!").equals(List.of("123", "world"));
+    // TEST_END
+
+    // TEST
+    try {
+      ExtractUniqueWords.extractUniqueWords("");
+      assert false;
+    } catch (IllegalArgumentException e) {
+      assert true;
+    }
+    // TEST_END
+
+    // TEST
+    try {
+      ExtractUniqueWords.extractUniqueWords(null);
+      assert false;
+    } catch (IllegalArgumentException e) {
+      assert true;
+    }
+    // TEST_END
+  }
+}
+
+------------------------------------------------------------------------------------------------------------------------
+6- 
+
+You are developing a system for a cinema that needs to manage seat bookings for multiple movie screenings throughout the day. Each screening
+room has multiple rows, and each row has a number of seats. The system should handle reservations efficiently, avoiding overbooking and
+allowing quick checks for seat availability.
+
+Create a Java class CinemaBookingSystem that manages seat bookings using collections. Implement features to add a screening, book a seat,
+and check seat availability. Use nested classes to encapsulate screening and seat details.
+if an attempt to book a seat is made, and the seat is available, return true. if not, return false.
+
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+public class CinemaBookingSystem {
+  public static class Seat {
+    private boolean isBooked;
+
+    public Seat() {
+      this.isBooked = false;
+    }
+
+    public boolean bookSeat() {
+      if (!isBooked) {
+        isBooked = true;
+        return true;
+      }
+      return false;
+    }
+
+    public boolean isBooked() {
+      return isBooked;
+    }
+  }
+
+  public static class Screening {
+    private String movieTitle;
+    private Map<Integer, List<Seat>> seatsByRow;
+
+    public Screening(String movieTitle, int rows, int seatsPerRow) {
+      this.movieTitle = movieTitle;
+      this.seatsByRow = new HashMap<>();
+      for (int i = 1; i <= rows; i++) {
+        List<Seat> seats = new ArrayList<>();
+        for (int j = 0; j < seatsPerRow; j++) {
+          seats.add(new Seat());
+        }
+        seatsByRow.put(i, seats);
+      }
+    }
+
+    public boolean bookSeat(int row, int seatNumber) {
+      List<Seat> seats = seatsByRow.get(row);
+      if (seats != null && seatNumber < seats.size()) {
+        return seats.get(seatNumber).bookSeat();
+      }
+      return false;
+    }
+
+    public String getMovieTitle() {
+      return movieTitle;
+    }
+  }
+
+  private Map<String, Screening> screenings;
+
+  public CinemaBookingSystem() {
+    this.screenings = new HashMap<>();
+  }
+
+  public void addScreening(String movieTitle, int rows, int seatsPerRow) {
+    screenings.put(movieTitle, new Screening(movieTitle, rows, seatsPerRow));
+  }
+
+  public boolean bookSeat(String movieTitle, int row, int seatNumber) {
+    if (movieTitle == null || movieTitle.isEmpty()) {
+      throw new IllegalArgumentException("Title cannot be null or empty");
+    }
+
+    if (row <= 0 || seatNumber <= 0) {
+      throw new IllegalArgumentException("row or seatNumber must be greater than 0");
+    }
+    Screening screening = screenings.get(movieTitle);
+    if (screening != null) {
+      return screening.bookSeat(row, seatNumber);
+    }
+    return false;
+  }
+}
+
+
+public class Main {
+  public static void main(String[] args) {
+    //TEST
+    CinemaBookingSystem system = new CinemaBookingSystem();
+    system.addScreening("Titanic", 5, 20);
+    assert system.bookSeat("Titanic", 3, 5);
+    //TEST_END
+
+    //TEST
+    assert !system.bookSeat("Titanic", 3, 5);
+    //TEST_END
+
+    //TEST
+    assert system.bookSeat("Titanic", 3, 3);
+    //TEST_END
+
+    //TEST
+    assert !system.bookSeat("Titanic", 3, 3);
+    //TEST_END
+
+    //TEST
+    assert !system.bookSeat("Titanic", 3, 21);
+    //TEST_END
+
+    //TEST
+    assert !system.bookSeat("HelloWord", 3, 3);
+    //TEST_END
+
+    //TEST
+    assert !system.bookSeat("10", 3, 3);
+    //TEST_END
+
+    //TEST
+    try {
+      system.bookSeat("Titanic", 0, 3);
+      assert false;
+    } catch (IllegalArgumentException e) {
+      assert true;
+    }
+    //TEST_END
+
+    //TEST
+    try {
+      system.bookSeat(null, 3, 3);
+      assert false;
+    } catch (IllegalArgumentException e) {
+      assert true;
+    }
+    //TEST_END
+  }
+}
+
+------------------------------------------------------------------------------------------------------------------------
+7-
+
+You are developing a system for a digital library that needs to efficiently manage its collection of ebooks and audio books.
+Each book has a unique identifier, a title, and is associated with specific genres.
+
+Create a Java class DigitalLibrary that uses a HashMap to manage books. Implement features to add books, search for books
+by title, and list all books in a genre.
+
+Create a method addBook(String id, String title, List<String> genres) which adds a book to the library
+
+Create method Book findBookById(String id) which returns a book if it exists
+
+Create method List<Book> findBooksByGenre(String genre) which finds book with a given genre
+
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+
+public class DigitalLibrary {
+  public static class Book {
+    private String id;
+    private String title;
+    private Set<String> genres;
+
+    public Book(String id, String title, List<String> genres) {
+      this.id = id;
+      this.title = title;
+      this.genres = new HashSet<>(genres);
+    }
+
+    public String getTitle() {
+      return title;
+    }
+
+    public Set<String> getGenres() {
+      return genres;
+    }
+  }
+
+  private Map<String, Book> booksById;
+  private Map<String, List<Book>> booksByGenre;
+
+  public DigitalLibrary() {
+    this.booksById = new HashMap<>();
+    this.booksByGenre = new HashMap<>();
+  }
+
+  public void addBook(String id, String title, List<String> genres) {
+    if (id == null || id.isEmpty() || title == null || title.isEmpty() || genres == null || genres.isEmpty()) {
+      throw new IllegalArgumentException("Book details cannot be null or empty");
+    }
+    Book newBook = new Book(id, title, genres);
+    booksById.put(id, newBook);
+    for (String genre : genres) {
+      booksByGenre.putIfAbsent(genre, new ArrayList<>());
+      booksByGenre.get(genre).add(newBook);
+    }
+  }
+
+  public Book findBookById(String id) {
+    if (id == null || id.isEmpty()) {
+      throw new IllegalArgumentException("ID cannot be null or empty");
+    }
+    return booksById.get(id);
+  }
+
+  public List<Book> findBooksByGenre(String genre) {
+    if (genre == null || genre.isEmpty()) {
+      throw new IllegalArgumentException("Genre cannot be null or empty");
+    }
+    return booksByGenre.getOrDefault(genre, Collections.emptyList());
+  }
+}
+
+
+import java.util.Arrays;
+
+public class Main {
+  public static void main(String[] args) {
+    DigitalLibrary library = new DigitalLibrary();
+    library.addBook("001", "How to be rich", Arrays.asList("Programming", "Wealth"));
+    library.addBook("002", "Java in Practice", Arrays.asList("Programming", "Wealth", "Concurrency"));
+
+    // TEST
+    assert library.findBookById("001").getTitle().equals("How to be rich");
+    // TEST_END
+
+    // TEST
+    assert library.findBooksByGenre("Wealth").size() == 2;
+    // TEST_END
+
+    // TEST
+    assert library.findBooksByGenre("History").isEmpty();
+    // TEST_END
+
+    // TEST
+    try {
+      library.findBookById("");
+      assert false;
+    } catch (IllegalArgumentException e) {
+      assert true;
+    }
+    // TEST_END
+
+    // TEST
+    try {
+      library.findBooksByGenre(null);
+      assert false;
+    } catch (IllegalArgumentException e) {
+      assert true;
+    }
+    // TEST_END
+  }
+}
+------------------------------------------------------------------------------------------------------------------------
+8-
+You are tasked with developing a system for a corporate office that schedules meetings. Each meeting has a start
+time, end time, and a unique identifier. It's crucial for the system to manage meetings efficiently, allowing
+for quick insertion, deletion, and retrieval of meetings based on their scheduled time.
+
+Create a Java class MeetingScheduler that uses a TreeSet to manage meetings. Implement features to add a meeting,
+cancel a meeting, and find the next meeting scheduled after a given time.
+
+
+Create a method void addMeeting(String id, Date startTime, Date endTime) which adds a new meeting
+
+Create a method boolean cancelMeeting(String id) which attempts to cancel a meeting and returns true if successful
+
+Create a method Meeting getNextMeeting(Date currentTime) which returns the next meeting
+
+import java.util.Date;
+import java.util.TreeSet;
+
+public class MeetingScheduler {
+  public static class Meeting implements Comparable<Meeting> {
+    private String id;
+    private Date startTime;
+    private Date endTime;
+
+    public Meeting(String id, Date startTime, Date endTime) {
+      this.id = id;
+      this.startTime = startTime;
+      this.endTime = endTime;
+    }
+
+    public String getId() {
+      return id;
+    }
+
+    @Override
+    public int compareTo(Meeting other) {
+      return this.startTime.compareTo(other.startTime);
+    }
+  }
+
+  private TreeSet<Meeting> meetings;
+
+  public MeetingScheduler() {
+    meetings = new TreeSet<>();
+  }
+
+  public void addMeeting(String id, Date startTime, Date endTime) {
+    if (id == null || id.isEmpty() || endTime.before(startTime)) {
+      throw new IllegalArgumentException("Invalid inputs");
+    }
+    meetings.add(new Meeting(id, startTime, endTime));
+  }
+
+  public boolean cancelMeeting(String id) {
+    if (id == null || id.isEmpty()) {
+      throw new IllegalArgumentException("Invalid inputs");
+    }
+    return meetings.removeIf(meeting -> meeting.getId().equals(id));
+  }
+
+  public Meeting getNextMeeting(Date currentTime) {
+    for (Meeting meeting : meetings) {
+      if (meeting.startTime.after(currentTime)) {
+        return meeting;
+      }
+    }
+    return null;
+  }
+}
+
+
+import java.util.Date;
+
+public class Main {
+  public static void main(String[] args) {
+    MeetingScheduler scheduler = new MeetingScheduler();
+    scheduler.addMeeting("001", new Date(), new Date(new Date().getTime() + 3600000));
+
+    // TEST
+    try {
+      scheduler.addMeeting("", new Date(), new Date(new Date().getTime() + 3600000));
+      assert false;
+    } catch (IllegalArgumentException e) {
+      assert true;
+    }
+    // TEST_END
+
+    // TEST
+    try {
+      scheduler.addMeeting(null, new Date(), new Date(new Date().getTime() + 3600000));
+      assert false;
+    } catch (IllegalArgumentException e) {
+      assert true;
+    }
+    // TEST_END
+
+    // TEST
+    try {
+      scheduler.addMeeting("001", new Date(new Date().getTime() + 3600000), new Date());
+      assert false;
+    } catch (IllegalArgumentException e) {
+      assert true;
+    }
+    // TEST_END
+
+    // TEST
+    MeetingScheduler.Meeting nextMeeting = scheduler.getNextMeeting(new Date(new Date().getTime() - 3600000));
+    assert nextMeeting.getId().equals("001");
+    // TEST_END
+
+    // TEST
+    assert !nextMeeting.getId().equals("002");
+    // TEST_END
+
+    // TEST
+    assert !nextMeeting.getId().equals("");
+    // TEST_END
+
+    // TEST
+    assert !nextMeeting.getId().equals("x");
+    // TEST_END
+
+    // TEST
+    assert scheduler.cancelMeeting("001");
+    // TEST_END
+
+    // TEST
+    try {
+      scheduler.cancelMeeting("");
+      assert false;
+    } catch (IllegalArgumentException e) {
+      assert true;
+    }
+    // TEST_END
+
+    // TEST
+    try {
+      scheduler.cancelMeeting(null);
+      assert false;
+    } catch (IllegalArgumentException e) {
+      assert true;
+    }
+    // TEST_END
+
+    // TEST
+    assert scheduler.getNextMeeting(new Date()) == null;
+    // TEST_END
+  }
+}
+
+------------------------------------------------------------------------------------------------------------------------
+9-
+Day 4: Emergency Room Queue Management
+
+You are developing a system for an emergency room (ER) where patients are prioritized based on the severity of their condition. Each patient
+has a severity level, a unique identifier, and an arrival timestamp.
+
+Create a Java class EmergencyRoomManagement that uses a PriorityQueue to manage patient queues efficiently.
+Implement features to admit a patient, discharge a patient, and check the next patient to be treated.
+
+Create a method void admitPatient(String id, int severityLevel, Date arrivalTime) to admit a new patient to the emergency room
+
+Create a method boolean dischargePatient(String id) to discharge a patient
+
+Create a method Patient getNextPatient() which gets the next patient but does not discharge them
+
+import java.util.Date;
+import java.util.PriorityQueue;
+
+public class EmergencyRoomManagement {
+
+  public static class Patient implements Comparable<Patient> {
+    public String id;
+    public int severityLevel;
+    public Date arrivalTime;
+
+    public Patient(String id, int severityLevel, Date arrivalTime) {
+      this.id = id;
+      this.severityLevel = severityLevel;
+      this.arrivalTime = arrivalTime;
+    }
+
+    @Override
+    public int compareTo(Patient other) {
+      if (this.severityLevel != other.severityLevel) {
+        return other.severityLevel - this.severityLevel;
+      }
+      return this.arrivalTime.compareTo(other.arrivalTime);
+    }
+
+    @Override
+    public String toString() {
+      return "Patient ID: " + id + ", Severity Level: " + severityLevel + ", Arrival Time: " + arrivalTime;
+    }
+  }
+
+  private PriorityQueue<Patient> patientQueue;
+
+  public EmergencyRoomManagement() {
+    patientQueue = new PriorityQueue<>();
+  }
+
+  public void admitPatient(String id, int severityLevel, Date arrivalTime) {
+    if (id == null || id.isEmpty() || arrivalTime == null) {
+      throw new IllegalArgumentException("Invalid input");
+    }
+    patientQueue.add(new Patient(id, severityLevel, arrivalTime));
+  }
+
+  public boolean dischargePatient(String id) {
+    if (id == null || id.isEmpty()) {
+      throw new IllegalArgumentException("Invalid input");
+    }
+    return patientQueue.removeIf(patient -> patient.id.equals(id));
+  }
+
+  public Patient getNextPatient() {
+    return patientQueue.peek();
+  }
+}
+
+
+import java.util.Date;
+
+public class Main {
+  public static void main(String[] args) {
+    EmergencyRoomManagement erManagement = new EmergencyRoomManagement();
+    erManagement.admitPatient("001", 5, new Date());
+
+    // TEST
+    try {
+      erManagement.admitPatient(null, 5, new Date());
+      assert false;
+    } catch (IllegalArgumentException e) {
+      assert true;
+    }
+    // TEST_END
+
+    // TEST
+    try {
+      erManagement.admitPatient("002", 5, null);
+      assert false;
+    } catch (IllegalArgumentException e) {
+      assert true;
+    }
+    // TEST_END
+
+    // TEST
+    EmergencyRoomManagement.Patient nextPatient = erManagement.getNextPatient();
+    assert nextPatient.id.equals("001");
+    // TEST_END
+
+    // TEST
+    assert !nextPatient.id.equals("x");
+    // TEST_END
+
+    // TEST
+    assert !nextPatient.id.equals("x");
+    // TEST_END
+
+    // TEST
+    assert erManagement.dischargePatient("001");
+    // TEST_END
+
+    // TEST
+    assert erManagement.getNextPatient() == null;
+    // TEST_END
+
+    // TEST
+    try {
+      erManagement.dischargePatient(null);
+      assert false;
+    } catch (IllegalArgumentException e) {
+      assert true;
+    }
+    // TEST_END
+
+    // TEST
+    try {
+      erManagement.dischargePatient("");
+      assert false;
+    } catch (IllegalArgumentException e) {
+      assert true;
+    }
+    // TEST_END
+
+  }
+}
+
+------------------------------------------------------------------------------------------------------------------------
+10-
+Enhanced Prompt for Day 5: Advanced University Course Registration System
+Objective:
+Develop an advanced course registration system using Java's ConcurrentHashMap and CopyOnWriteArrayList 
+to manage concurrent access to course registrations, ensuring thread safety and efficient handling 
+of high user traffic.
+
+Scenario:
+You are tasked with designing a system for a large university where thousands of students simultaneously 
+register for courses online. Each course has a unique code, a limited number of seats (capacity), 
+and may require students to complete prerequisites.
+
+Challenge:
+Implement the ConcurrentCourseRegistrationSystem to handle multiple students attempting to register for 
+the same or different courses concurrently. The system must manage course capacities dynamically and 
+verify that all prerequisites are met under high load, without causing data corruption or access violations.
+
+import java.util.concurrent.*;
+import java.util.*;
+
+public class ConcurrentCourseRegistrationSystem {
+    private static class Course {
+        private String code;
+        private int capacity;
+        private Set<String> prerequisites;
+        private Set<String> enrolledStudents;
+
+        public Course(String code, int capacity, Set<String> prerequisites) {
+            this.code = code;
+            this.capacity = capacity;
+            this.prerequisites = ConcurrentHashMap.newKeySet();
+            this.prerequisites.addAll(prerequisites);
+            this.enrolledStudents = ConcurrentHashMap.newKeySet();
+        }
+
+        public boolean enrollStudent(String studentId) {
+            if (enrolledStudents.size() >= capacity) {
+                throw new IllegalStateException("Course is full");
+            }
+            return enrolledStudents.add(studentId);
+        }
+
+        public Set<String> getPrerequisites() {
+            return prerequisites;
+        }
+    }
+
+    private ConcurrentMap<String, Course> courses;
+    private ConcurrentMap<String, Set<String>> studentCourses;
+
+    public ConcurrentCourseRegistrationSystem() {
+        courses = new ConcurrentHashMap<>();
+        studentCourses = new ConcurrentHashMap<>();
+    }
+
+    public void addCourse(String code, int capacity, Set<String> prerequisites) {
+        if (courses.putIfAbsent(code, new Course(code, capacity, prerequisites)) != null) {
+            throw new IllegalStateException("Course already exists");
+        }
+    }
+
+    public boolean registerStudent(String studentId, String courseCode) {
+        Course course = courses.get(courseCode);
+        if (course == null) {
+            throw new IllegalArgumentException("Course does not exist");
+        }
+
+        Set<String> completedCourses = studentCourses.computeIfAbsent(studentId, k -> ConcurrentHashMap.newKeySet());
+        if (!completedCourses.containsAll(course.getPrerequisites())) {
+            throw new IllegalStateException("Prerequisite courses not completed");
+        }
+
+        if (course.enrollStudent(studentId)) {
+            completedCourses.add(courseCode);
+            return true;
+        }
+        return false;
+    }
+}
+
+public class Main {
+    public static void main(String[] args) {
+        ConcurrentCourseRegistrationSystem system = new ConcurrentCourseRegistrationSystem();
+        system.addCourse("201", 2, new HashSet<>(Arrays.asList("101", "102")));
+
+        ExecutorService executor = Executors.newFixedThreadPool(10);
+        Runnable task = () -> {
+            try {
+                system.registerStudent(Thread.currentThread().getName(), "201");
+            } catch (Exception e) {
+                System.out.println(e.getMessage());
+            }
+        };
+
+        // Simulate 10 students trying to register at the same time
+        for (int i = 0; i < 10; i++) {
+            executor.execute(task);
+        }
+
+        executor.shutdown();
+        try {
+            executor.awaitTermination(1, TimeUnit.MINUTES);
+        } catch (InterruptedException e) {
+            System.out.println("Registration interrupted");
+        }
+    }
+}
+
+
+
+
+------------------------------------------------------------------------------------------------------------------------
+11 -  Day 5: Article Publishing Queue Management
+
+You are developing a system for an online magazine that schedules articles for publication. Each article is
+ associated with a title, an author, a unique identifier, and a scheduled publication date. The system needs
+ to prioritize articles that are scheduled to be published sooner.
+
+Create a Java class ArticlePublishingManager that uses a PriorityQueue to manage and prioritize articles for
+ publication. Implement methods to schedule articles, update publication dates, and retrieve the next article
+ due for publication.
+
+Detailed Method Requirements:
+
+scheduleArticle(String id, String title, String author, Date publishDate): Adds an article to the system with
+ a specified publication date.
+
+updatePublicationDate(String id, Date newPublishDate): Updates an existing article's publication date.
+
+getNextArticle(): Retrieves and removes the article with the earliest publication date from the queue,
+ indicating it's next to be publish
+
+
+import java.util.Date;
+import java.util.PriorityQueue;
+
+public class ArticlePublishingManager {
+  public static class Article implements Comparable<Article> {
+    private String id;
+    private String title;
+    private String author;
+    private Date publishDate;
+
+    public Article(String id, String title, String author, Date publishDate) {
+      if (id == null || id.isEmpty()) {
+        throw new IllegalArgumentException("Article ID cannot be null or empty.");
+      }
+      if (title == null || title.isEmpty()) {
+        throw new IllegalArgumentException("Article title cannot be null or empty.");
+      }
+      if (author == null || author.isEmpty()) {
+        throw new IllegalArgumentException("Author cannot be null or empty.");
+      }
+      if (publishDate == null) {
+        throw new IllegalArgumentException("Publish date cannot be null.");
+      }
+      if (publishDate.before(new Date())) {
+        throw new IllegalArgumentException("Publish date cannot be in the past.");
+      }
+      this.id = id;
+      this.title = title;
+      this.author = author;
+      this.publishDate = publishDate;
+    }
+
+    @Override
+    public int compareTo(Article other) {
+      return this.publishDate.compareTo(other.publishDate);
+    }
+
+    public String getId() {
+      return this.id;
+    }
+  }
+
+  private PriorityQueue<Article> articles;
+
+  public ArticlePublishingManager() {
+    this.articles = new PriorityQueue<>();
+  }
+
+  public void scheduleArticle(String id, String title, String author, Date publishDate) {
+    articles.add(new Article(id, title, author, publishDate));
+  }
+
+  public boolean updatePublicationDate(String id, Date newPublishDate) {
+    for (Article article : articles) {
+      if (article.id.equals(id)) {
+        articles.remove(article);
+        article.publishDate = newPublishDate;
+        articles.add(article);
+        return true;
+      }
+    }
+    return false;
+  }
+
+  public Article getNextArticle() {
+    return articles.poll();
+  }
+}
+
+
+import java.util.Date;
+
+public class Main {
+  public static void main(String[] args) {
+    ArticlePublishingManager manager = new ArticlePublishingManager();
+    manager.scheduleArticle("001", "The Future of AI", "Power Mukisa", new Date(System.currentTimeMillis() + 86400000));
+    manager.scheduleArticle("002", "Business Analytics", "Alice Mukisa", new Date(System.currentTimeMillis() + 43200000));
+
+    // TEST
+    ArticlePublishingManager.Article nextArticle = manager.getNextArticle();
+    assert nextArticle.getId().equals("002");
+    // TEST_END
+
+    // TEST
+    boolean updateSuccess = manager.updatePublicationDate("001", new Date(System.currentTimeMillis() + 3600000));
+    assert updateSuccess;
+    // TEST_END
+
+    // TEST
+    nextArticle = manager.getNextArticle();
+    assert nextArticle.getId().equals("001");
+    // TEST_END
+
+    // TEST
+    boolean falseUpdate = manager.updatePublicationDate("003", new Date());
+    assert !falseUpdate;
+    // TEST_END
+
+    // TEST
+    try {
+      manager.scheduleArticle("", "", "Author", new Date());
+      assert false;
+    } catch (IllegalArgumentException e) {
+      assert true;
+    }
+    // TEST_END
+
+    // TEST
+    try {
+      manager.scheduleArticle("004", "Past Article", "Historian", new Date(System.currentTimeMillis() - 10000));
+      assert false;
+    } catch (IllegalArgumentException e) {
+      assert true;
+    }
+    // TEST_END
+
+    // TEST
+    while (manager.getNextArticle() != null)
+      ;
+    assert manager.getNextArticle() == null;
+    // TEST_END
+  }
+}
+
+------------------------------------------------------------------------------------------------------------------------
+12-  Day 6: Customer Support Ticket System
+
+You are tasked with developing a system for managing customer support tickets for a tech company.
+Each support ticket includes a ticket ID, customer details, the issue category, and an urgency level.
+Tickets need to be addressed in an order that prioritizes both the urgency of the issue and how long
+the customer has been waiting.
+
+Create a Java class SupportTicketManager that uses a PriorityQueue to prioritize and manage support
+ tickets effectively. Implement methods to add a ticket, update ticket urgency, and retrieve the next ticket to be resolved.
+
+addTicket(String ticketId, String customerName, String issueCategory, int urgencyLevel): Adds a new ticket to the system.
+
+updateTicketUrgency(String ticketId, int newUrgencyLevel): Updates an existing ticket's urgency level. Urgency must be between
+1 and 5.
+
+getNextTicket(): Retrieves and removes the ticket with the highest urgency from the queue.
+
+
+import java.util.PriorityQueue;
+
+public class SupportTicketManager {
+  public static class SupportTicket implements Comparable<SupportTicket> {
+    private String ticketId;
+    private String customerName;
+    private String issueCategory;
+    private int urgencyLevel;
+    private long creationTime;
+
+    public SupportTicket(String ticketId, String customerName, String issueCategory, int urgencyLevel) {
+      if (ticketId == null || ticketId.isEmpty()) {
+        throw new IllegalArgumentException("Ticket ID cannot be null or empty.");
+      }
+      if (customerName == null || customerName.isEmpty()) {
+        throw new IllegalArgumentException("Customer name cannot be null or empty.");
+      }
+      if (urgencyLevel < 1 || urgencyLevel > 5) {
+        throw new IllegalArgumentException("Urgency level must be between 1 and 5.");
+      }
+      this.ticketId = ticketId;
+      this.customerName = customerName;
+      this.issueCategory = issueCategory;
+      this.urgencyLevel = urgencyLevel;
+      this.creationTime = System.currentTimeMillis();
+    }
+
+    @Override
+    public int compareTo(SupportTicket other) {
+      if (this.urgencyLevel != other.urgencyLevel) {
+        return other.urgencyLevel - this.urgencyLevel;
+      }
+      return Long.compare(this.creationTime, other.creationTime);
+    }
+
+    public String getTicketId() {
+      return ticketId;
+    }
+  }
+
+  private PriorityQueue<SupportTicket> tickets;
+
+  public SupportTicketManager() {
+    tickets = new PriorityQueue<>();
+  }
+
+  public void addTicket(String ticketId, String customerName, String issueCategory, int urgencyLevel) {
+    tickets.add(new SupportTicket(ticketId, customerName, issueCategory, urgencyLevel));
+  }
+
+  public boolean updateTicketUrgency(String ticketId, int newUrgencyLevel) {
+    if (newUrgencyLevel < 1 || newUrgencyLevel > 5) {
+      throw new IllegalArgumentException("Urgency level must be between 1 and 5.");
+    }
+    for (SupportTicket ticket : tickets) {
+      if (ticket.ticketId.equals(ticketId)) {
+        tickets.remove(ticket);
+        ticket.urgencyLevel = newUrgencyLevel;
+        tickets.add(ticket);
+        return true;
+      }
+    }
+    return false;
+  }
+
+  public SupportTicket getNextTicket() {
+    return tickets.poll();
+  }
+}
+
+
+public class Main {
+  public static void main(String[] args) {
+    SupportTicketManager manager = new SupportTicketManager();
+
+    manager.addTicket("T001", "Peter", "Software Issue", 3);
+    manager.addTicket("T002", "Grace", "Hardware Failure", 5);
+
+    // TEST
+    SupportTicketManager.SupportTicket nextTicket = manager.getNextTicket();
+    assert nextTicket.getTicketId().equals("T002");
+    // TEST_END
+
+    // TEST
+    try {
+      manager.addTicket("", "Alice Johnson", "Networking Issue", 4);
+      assert false;
+    } catch (IllegalArgumentException e) {
+      assert true;
+    }
+    // TEST_END
+
+    // TEST
+    try {
+      manager.updateTicketUrgency("T001", 0);
+      assert false;
+    } catch (IllegalArgumentException e) {
+      assert true;
+    }
+    // TEST_END
+
+    // TEST
+    assert !manager.updateTicketUrgency("T999", 4);
+    // TEST_END
+
+    // TEST
+    assert manager.updateTicketUrgency("T001", 5);
+    nextTicket = manager.getNextTicket();
+    assert (nextTicket.getTicketId()).equals("T001");
+    // TEST_END
+
+    // TEST
+    manager.addTicket("T003", "Bob Brown", "Software Issue", 4);
+    manager.addTicket("T004", "Eve Davis", "Hardware Failure", 4);
+    assert manager.getNextTicket().getTicketId().equals("T003");
+    assert manager.getNextTicket().getTicketId().equals("T004");
+    // TEST_END
+
+    // TEST
+    assert manager.getNextTicket() == null;
+    // TEST_END
+  }
+}
+
+
+------------------------------------------------------------------------------------------------------------------------
+13 - Day 4: Flight Delay Management System
+
+You are developing a system for an airport to manage flight delays. Each flight is represented
+by a unique flight number, scheduled departure time, and a delay duration. Flights need to be
+rescheduled based on their new estimated departure time, which includes the delay.
+
+Create a Java class FlightDelayManager that uses a PriorityQueue to manage and prioritize flights based
+on the shortest delay to the longest. Implement methods to add flights, update flight delays, and retrieve
+the next flight scheduled to depart.
+
+Create methods:
+
+addFlight(String flightNumber, Date scheduledDeparture, int delayMinutes): Adds a flight to the system.
+
+updateFlightDelay(String flightNumber, int newDelayMinutes): Updates an existing flight's delay.
+
+getNextFlight(): Retrieves and removes the flight with the shortest delay from the queue, indicating it's next to depart.
+
+
+import java.util.Calendar;
+import java.util.Date;
+import java.util.PriorityQueue;
+
+public class FlightDelayManager {
+  public static class Flight implements Comparable<Flight> {
+    private String flightNumber;
+    private Date scheduledDeparture;
+    private int delayMinutes;
+
+    public Flight(String flightNumber, Date scheduledDeparture, int delayMinutes) {
+      if (flightNumber == null || flightNumber.isEmpty()) {
+        throw new IllegalArgumentException("Flight number cannot be null or empty.");
+      }
+      if (scheduledDeparture == null) {
+        throw new IllegalArgumentException("Scheduled departure cannot be null.");
+      }
+      if (delayMinutes < 0) {
+        throw new IllegalArgumentException("Delay minutes cannot be negative.");
+      }
+      this.flightNumber = flightNumber;
+      this.scheduledDeparture = scheduledDeparture;
+      this.delayMinutes = delayMinutes;
+    }
+
+    @Override
+    public int compareTo(Flight other) {
+      Date thisDeparture = this.getUpdatedDeparture();
+      Date otherDeparture = other.getUpdatedDeparture();
+      return thisDeparture.compareTo(otherDeparture);
+    }
+
+    public void setDelayMinutes(int delayMinutes) {
+      this.delayMinutes = delayMinutes;
+    }
+
+    public Date getUpdatedDeparture() {
+      Calendar cal = Calendar.getInstance();
+      cal.setTime(scheduledDeparture);
+      cal.add(Calendar.MINUTE, delayMinutes);
+      return cal.getTime();
+    }
+
+    public String getFlightNumber() {
+      return flightNumber;
+    }
+
+    public int getDelayMinutes() {
+      return delayMinutes;
+    }
+  }
+
+  private PriorityQueue<Flight> flights;
+
+  public FlightDelayManager() {
+    this.flights = new PriorityQueue<>();
+  }
+
+  public void addFlight(String flightNumber, Date scheduledDeparture, int delayMinutes) {
+    Flight newFlight = new Flight(flightNumber, scheduledDeparture, delayMinutes);
+    flights.add(newFlight);
+  }
+
+  public boolean updateFlightDelay(String flightNumber, int newDelayMinutes) {
+    for (Flight flight : flights) {
+      if (flight.getFlightNumber().equals(flightNumber)) {
+        flights.remove(flight);
+        flight.setDelayMinutes(newDelayMinutes);
+        flights.add(flight);
+        return true;
+      }
+    }
+    return false;
+  }
+
+  public Flight getNextFlight() {
+    return flights.poll();
+  }
+}
+
+
+import java.util.Date;
+
+public class Main {
+  public static void main(String[] args) {
+    FlightDelayManager manager = new FlightDelayManager();
+    manager.addFlight("FL123", new Date(System.currentTimeMillis() + 3600 * 1000), 90);  // Flight in 1 hour with 90 minutes delay
+    manager.addFlight("FL456", new Date(System.currentTimeMillis() + 1800 * 1000), 30);  // Flight in 30 minutes with 30 minutes delay
+    manager.addFlight("FL789", new Date(System.currentTimeMillis() + 7200 * 1000), 120); // Flight in 2 hours with 120 minutes delay
+
+    // TEST
+    FlightDelayManager.Flight nextFlight = manager.getNextFlight();
+    assert nextFlight.getFlightNumber().equals("FL456");
+    // TEST_END
+
+    // TEST
+    assert manager.updateFlightDelay("FL123", 150);
+    nextFlight = manager.getNextFlight();
+    assert nextFlight != null && nextFlight.getFlightNumber().equals("FL123") && nextFlight.getDelayMinutes() == 150;
+    // TEST_END
+
+    // TEST
+    assert !manager.updateFlightDelay("FL000", 100);
+    // TEST_END
+
+    // TEST
+    assert manager.updateFlightDelay("FL789", 60);
+    // TEST_END
+
+    // TEST
+    assert manager.getNextFlight().getFlightNumber().equals("FL789");
+    // TEST_END
+
+    // TEST
+    manager.addFlight("FL101", new Date(System.currentTimeMillis() + 5400 * 1000), 60);
+    assert manager.getNextFlight().getFlightNumber().equals("FL101");
+    // TEST_END
+
+    // TEST
+    manager.getNextFlight();
+    assert manager.getNextFlight() == null;
+    // TEST_END
+
+    // TEST
+    manager.addFlight("FL201", new Date(System.currentTimeMillis() + 3600 * 1000), 90);
+    manager.addFlight("FL202", new Date(System.currentTimeMillis() + 3600 * 1000), 90);
+    manager.addFlight("FL203", new Date(System.currentTimeMillis() + 3600 * 1000), 90);
+    manager.getNextFlight(); // Remove one
+    assert manager.getNextFlight() != null;
+    assert manager.getNextFlight() != null;
+    // TEST_END
+
+    try {
+      manager.addFlight("FL123", new Date(System.currentTimeMillis() + 3600 * 1000), 90);
+      manager.addFlight("FL456", null, 30);
+      assert false;
+    } catch (IllegalArgumentException e) {
+      assert true;
+    }
+
+    // TEST
+    try {
+      manager.addFlight("", new Date(), 10);
+      assert false;
+    } catch (IllegalArgumentException e) {
+      assert true;
+    }
+    // TEST_END
+
+    // TEST
+    try {
+      manager.addFlight("FL789", new Date(), -1);
+      assert false;
+    } catch (IllegalArgumentException e) {
+      assert true;
+    }
+    // TEST_END
+  }
+}
+
+
+------------------------------------------------------------------------------------------------------------------------
+14 - Day 7: Restaurant Reservation Management System
+
+You are tasked with developing a system for a restaurant to manage table reservations. Each
+reservation includes a unique reservation ID, the customer's name, the number of guests, and the reservation time.
+
+Create a Java class RestaurantReservationManager that uses a LinkedList to manage reservations. Implement
+methods to add a reservation, cancel a specific reservation, and retrieve the next reservation due.
+
+Methods:
+
+addReservation(String reservationId, String customerName, int numberOfGuests, Date reservationTime): Adds a
+new reservation to the list.
+
+cancelReservation(String reservationId): Removes a reservation based on its ID.
+
+getNextReservation(): Retrieves and removes the next reservation due based on the reservation time.
+
+
+import java.util.Comparator;
+import java.util.Date;
+import java.util.LinkedList;
+
+public class RestaurantReservationManager {
+
+  public static class Reservation implements Comparable<Reservation> {
+    private String reservationId;
+    private String customerName;
+    private int numberOfGuests;
+    private Date reservationTime;
+
+    public Reservation(String reservationId, String customerName, int numberOfGuests, Date reservationTime) {
+      if (reservationId == null || reservationId.isEmpty()) {
+        throw new IllegalArgumentException("Reservation ID cannot be null or empty.");
+      }
+      if (customerName == null || customerName.isEmpty()) {
+        throw new IllegalArgumentException("Customer name cannot be null or empty.");
+      }
+      if (numberOfGuests < 1) {
+        throw new IllegalArgumentException("Number of guests must be at least 1.");
+      }
+      if (reservationTime == null || reservationTime.before(new Date())) {
+        throw new IllegalArgumentException("Reservation time cannot be null.");
+      }
+      this.reservationId = reservationId;
+      this.customerName = customerName;
+      this.numberOfGuests = numberOfGuests;
+      this.reservationTime = reservationTime;
+    }
+
+    @Override
+    public int compareTo(Reservation other) {
+      return this.reservationTime.compareTo(other.reservationTime);
+    }
+
+    public String getReservationId() {
+      return reservationId;
+    }
+  }
+
+  private LinkedList<Reservation> reservations;
+
+  public RestaurantReservationManager() {
+    reservations = new LinkedList<>();
+  }
+
+  public void addReservation(String reservationId, String customerName, int numberOfGuests, Date reservationTime) {
+    reservations.add(new Reservation(reservationId, customerName, numberOfGuests, reservationTime));
+    reservations.sort(Comparator.naturalOrder());
+  }
+
+  public boolean cancelReservation(String reservationId) {
+    return reservations.removeIf(reservation -> reservation.reservationId.equals(reservationId));
+  }
+
+  public Reservation getNextReservation() {
+    return reservations.poll();
+  }
+}
+
+
+import java.util.Date;
+
+public class Main {
+  public static void main(String[] args) {
+    RestaurantReservationManager manager = new RestaurantReservationManager();
+    manager.addReservation("R001", "Alice Johnson", 4, new Date(System.currentTimeMillis() + 3600000));
+    manager.addReservation("R002", "Bob Smith", 2, new Date(System.currentTimeMillis() + 1800000));
+
+    //TEST
+    RestaurantReservationManager.Reservation nextReservation = manager.getNextReservation();
+    assert nextReservation != null && "R002".equals(nextReservation.getReservationId()) : "R002 should be the next reservation due.";
+    //TEST_END
+
+    //TEST
+    boolean result = manager.cancelReservation("R001");
+    assert result : "Reservation R001 should be canceled successfully.";
+    //TEST_END
+
+    //TEST
+    result = manager.cancelReservation("R999");
+    assert !result : "Attempting to cancel a non-existent reservation should return false.";
+    //TEST_END
+
+    //TEST
+    try {
+      manager.addReservation("", "John Doe", 3, new Date(System.currentTimeMillis() + 5000000));
+      assert false;
+    } catch (IllegalArgumentException e) {
+      assert true;
+    }
+    //TEST_END
+
+    //TEST
+    try {
+      manager.addReservation("R003", "John Doe", 3, new Date(System.currentTimeMillis() - 1000));
+      assert false;
+    } catch (IllegalArgumentException e) {
+      assert true;
+    }
+    //TEST_END
+
+    //TEST
+    try {
+      manager.addReservation("R004", "Jane Doe", 0, new Date(System.currentTimeMillis() + 5000000));
+      assert false;
+    } catch (IllegalArgumentException e) {
+      assert true;
+    }
+    //TEST_END
+
+    //TEST
+    manager.getNextReservation();
+    assert manager.getNextReservation() == null;
+    //TEST_END
+  }
+}
+
+
+------------------------------------------------------------------------------------------------------------------------
+15 - Day 5: Conference Event Scheduling System
+
+
+You are developing a system for managing the scheduling of various events at a technology conference.
+Each event has a unique event ID, a title, a description, a start time, and a duration.
+
+Create a Java class TechConferenceEventScheduler that uses a TreeMap to store and manage events, allowing for quick
+ retrieval based on event start times. Implement methods to add events, remove events, and retrieve the
+ next event based on the current time.
+
+Method Requirements:
+
+addEvent(String eventId, String title, String description, Date startTime, int duration): Adds a new
+event to the schedule.
+
+removeEvent(String eventId): Removes an event from the schedule based on its ID.
+
+getNextEvent(Date currentTime): Retrieves the next event that will start after the given current time.
+
+
+
+import java.util.Date;
+import java.util.Map;
+import java.util.TreeMap;
+
+public class TechConferenceEventScheduler {
+
+  public static class Event implements Comparable<Event> {
+    private String eventId;
+    private String title;
+    private String description;
+    private Date startTime;
+    private int duration;
+
+    public Event(String eventId, String title, String description, Date startTime, int duration) {
+      if (eventId == null || eventId.isEmpty()) {
+        throw new IllegalArgumentException("Event ID cannot be null or empty.");
+      }
+      if (title == null || title.isEmpty()) {
+        throw new IllegalArgumentException("Title cannot be null or empty.");
+      }
+      if (description == null || description.isEmpty()) {
+        throw new IllegalArgumentException("Description cannot be null or empty.");
+      }
+      if (startTime == null) {
+        throw new IllegalArgumentException("Start time cannot be null.");
+      }
+      if (duration <= 0 || startTime.before(new Date())) {
+        throw new IllegalArgumentException("Duration must be greater than zero or in the future");
+      }
+      this.eventId = eventId;
+      this.title = title;
+      this.description = description;
+      this.startTime = startTime;
+      this.duration = duration;
+    }
+
+    @Override
+    public int compareTo(Event other) {
+      return this.startTime.compareTo(other.startTime);
+    }
+
+    public String getEventId() {
+      return eventId;
+    }
+  }
+
+  private TreeMap<Date, Event> events;
+
+  public TechConferenceEventScheduler() {
+    this.events = new TreeMap<>();
+  }
+
+  public void addEvent(String eventId, String title, String description, Date startTime, int duration) {
+    Event event = new Event(eventId, title, description, startTime, duration);
+    events.put(startTime, event);
+  }
+
+  public boolean removeEvent(String eventId) {
+    return events.entrySet().removeIf(entry -> entry.getValue().eventId.equals(eventId));
+  }
+
+  public Event getNextEvent(Date currentTime) {
+    Map.Entry<Date, Event> nextEntry = events.ceilingEntry(currentTime);
+    return nextEntry != null ? nextEntry.getValue() : null;
+  }
+}
+
+
+
+import java.util.Date;
+
+public class Main {
+  public static void main(String[] args) {
+    TechConferenceEventScheduler scheduler = new TechConferenceEventScheduler();
+    Date now = new Date();
+    scheduler.addEvent("E001", "Keynote Speech", "Opening keynote with visionary talks", new Date(now.getTime() + 3600000), 90); // 1 hour from now
+    scheduler.addEvent("E002", "AI Workshop", "Hands-on AI workshop", new Date(now.getTime() + 5400000), 120); // 1.5 hours from now
+
+    //TEST
+    TechConferenceEventScheduler.Event nextEvent = scheduler.getNextEvent(now);
+    assert "E001".equals(nextEvent.getEventId()) : "E001 should be the next event to start.";
+    //TEST_END
+
+    //TEST
+    boolean isRemoved = scheduler.removeEvent("E001");
+    assert isRemoved : "E001 should be successfully removed.";
+    nextEvent = scheduler.getNextEvent(now);
+    assert "E002".equals(nextEvent.getEventId()) : "After removing E001, E002 should be the next event.";
+    //TEST_END
+
+    //TEST
+    isRemoved = scheduler.removeEvent("E999");
+    assert !isRemoved : "Attempting to remove a non-existent event should return false.";
+    //TEST_END
+
+    //TEST
+    try {
+      scheduler.addEvent("E003", "Past Event", "This is a past event", new Date(now.getTime() - 10000), 60);
+      assert false;
+    } catch (IllegalArgumentException e) {
+      assert true;
+    }
+    //TEST_END
+
+    // TEST: Add an event with invalid duration
+    //TEST
+    try {
+      scheduler.addEvent("E004", "Invalid Duration Event", "This event has invalid duration", new Date(now.getTime() + 7200000), -1);
+      assert false;
+    } catch (IllegalArgumentException e) {
+      assert true;
+    }
+    //TEST_END
+
+    //TEST
+    scheduler.removeEvent("E002");
+    nextEvent = scheduler.getNextEvent(now);
+    assert nextEvent == null : "There should be no more events left.";
+    //TEST_END
+  }
+}
+
+
