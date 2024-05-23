@@ -15,6 +15,10 @@ package com.powem.inv.strings;
 //Output: "eefl" (Both 'e' characters appear twice, and 'f' and 'l' each appear once, but 'e' comes
 //before 'f' and 'l' in frequency and then alphabetically.)
 //The input cannot be an empty String
+//Strings which are capital letters should be treated differently from Strings which are small letter
+//Also, The final output should preserve the original case sensitivity
+//for example: Input: "Aabb" would have output "bbAa" because 'A' comes before 'a'
+
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -24,12 +28,12 @@ import java.util.Map;
 import java.util.Map.Entry;
 
 public class StringAlphabeticalFrequencySorter {
-  public static String frequencySort(String s) {
-    if (s == null || s.isEmpty()) {
+  public static String frequencySort(String input) {
+    if (input == null || input.isEmpty()) {
       throw new IllegalArgumentException("Input cannot be null or empty");
     }
     Map<Character, Integer> frequencyMap = new HashMap<>();
-    for (char c : s.toCharArray()) {
+    for (char c : input.toCharArray()) {
       frequencyMap.put(c, frequencyMap.getOrDefault(c, 0) + 1);
     }
 
@@ -53,35 +57,49 @@ public class StringAlphabeticalFrequencySorter {
   }
 }
 
-//public static void tests() {
-//// TEST
-//      assert StringAlphabeticalFrequencySorter.frequencySort("flee").equals("eefl");
-//// TEST_END
+//public class Main {
+//  public static void main(String[] args) {
+//    // TEST
+//    assert StringAlphabeticalFrequencySorter.frequencySort("flee").equals("eefl");
+//    // TEST_END
 //
-//// TEST
-//      assert StringAlphabeticalFrequencySorter.frequencySort("tree").equals("eert");
-//// TEST_END
+//    // TEST
+//    assert StringAlphabeticalFrequencySorter.frequencySort("tree").equals("eert");
+//    // TEST_END
 //
-//// TEST
-//      assert StringAlphabeticalFrequencySorter.frequencySort("Abb").equals("bbA");
-//// TEST_END
+//    // TEST
+//    assert StringAlphabeticalFrequencySorter.frequencySort("Abb").equals("bbA");
+//    // TEST_END
 //
-//// TEST
-//      try {
-//          StringAlphabeticalFrequencySorter.frequencySort(null);
-//        assert false;
-//            } catch (IllegalArgumentException e) {
-//    assert true;
+//    // TEST
+//    assert StringAlphabeticalFrequencySorter.frequencySort("Aabb").equals("bbAa");
+//    // TEST_END
+//
+//    // TEST
+//    assert StringAlphabeticalFrequencySorter.frequencySort("Aa  bb").equals("  bbAa");
+//    // TEST_END
+//
+//    // TEST
+//    assert StringAlphabeticalFrequencySorter.frequencySort("1Aabb").equals("bb1Aa");
+//    // TEST_END
+//
+//    // TEST
+//    try {
+//      StringAlphabeticalFrequencySorter.frequencySort(null);
+//      assert false;
+//    } catch (IllegalArgumentException e) {
+//      assert true;
 //    }
 //    // TEST_END
 //
 //    // TEST
 //    try {
-//    StringAlphabeticalFrequencySorter.frequencySort("");
+//      StringAlphabeticalFrequencySorter.frequencySort("");
 //      assert false;
-//          } catch (IllegalArgumentException e) {
-//    assert true;
+//    } catch (IllegalArgumentException e) {
+//      assert true;
 //    }
-//// TEST_END
+//    // TEST_END
+//  }
 //}
 
