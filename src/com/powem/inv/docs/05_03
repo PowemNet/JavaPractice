@@ -188,7 +188,7 @@ public class Main {
 
 
 ------------------------------------------------------------------------------------------------------------------------
-3- Remove All Adjacent Duplicates in String
+3- Remove All Adjacent Duplicates in String [Feedback:  NOT COMPLEX enough. replaced]
 
 Scenario:
 
@@ -266,6 +266,9 @@ import java.util.List;
 
 public class StringDecoder {
   public static List<String> decode(String s) {
+    if (s == null || s.isEmpty()) {
+      throw new IllegalArgumentException("Input cannot be null or empty");
+    }
     List<String> decoded = new ArrayList<>();
     int i = 0;
     while (i < s.length()) {
@@ -296,7 +299,6 @@ public class StringDecoder {
     return decoded;
   }
 }
-
 
 import java.util.List;
 
@@ -349,6 +351,24 @@ public class Main {
     // TEST
     try {
       StringDecoder.decode("#5Hell");
+      assert false;
+    } catch (IllegalArgumentException e) {
+      assert true;
+    }
+    // TEST_END
+
+    // TEST
+    try {
+      StringDecoder.decode(null);
+      assert false;
+    } catch (IllegalArgumentException e) {
+      assert true;
+    }
+    // TEST_END
+
+    // TEST
+    try {
+      StringDecoder.decode("");
       assert false;
     } catch (IllegalArgumentException e) {
       assert true;
@@ -578,7 +598,7 @@ public class Main {
 }
 
 ------------------------------------------------------------------------------------------------------------------------
-7-
+7- [FEEDBACK - not complex. wrote new one]
 
 You are developing a system for a digital library that needs to efficiently manage its collection of ebooks and audio books.
 Each book has a unique identifier, a title, and is associated with specific genres.
@@ -987,7 +1007,7 @@ public class Main {
 }
 
 ------------------------------------------------------------------------------------------------------------------------
-10-
+10- [FEEDBACK: not complex enough. replaced by ProductInventorySystem]
 Enhanced Prompt for Day 5: Advanced University Course Registration System
 Objective:
 Develop an advanced course registration system using Java's ConcurrentHashMap and CopyOnWriteArrayList 

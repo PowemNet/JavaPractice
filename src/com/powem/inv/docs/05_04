@@ -1,0 +1,533 @@
+1-
+
+------------------------------------------------------------------------------------------------------------------------
+2-
+
+------------------------------------------------------------------------------------------------------------------------
+3-
+------------------------------------------------------------------------------------------------------------------------
+4-
+
+------------------------------------------------------------------------------------------------------------------------
+5-
+
+------------------------------------------------------------------------------------------------------------------------
+6-
+------------------------------------------------------------------------------------------------------------------------
+7-
+------------------------------------------------------------------------------------------------------------------------
+8-
+------------------------------------------------------------------------------------------------------------------------
+9-
+
+------------------------------------------------------------------------------------------------------------------------
+10-
+
+------------------------------------------------------------------------------------------------------------------------
+11 -
+
+------------------------------------------------------------------------------------------------------------------------
+12-
+
+------------------------------------------------------------------------------------------------------------------------
+13 -
+
+------------------------------------------------------------------------------------------------------------------------
+14 -
+
+------------------------------------------------------------------------------------------------------------------------
+15 -
+
+------------------------------------------------------------------------------------------------------------------------
+
+16 - Rework from last week - brand new submission
+
+You are developing a system to manage a retail store's inventory. Each product in the inventory
+ has a unique product ID, a name, a category, a price, and a stock count. The system must
+ allow quick retrieval of products by name and efficient sorting and searching based on price or stock levels.
+
+Create the ProductInventorySystem class using a combination of Java's ArrayList and binary search
+ algorithm to manage the product list. Implement features to add products, search products by name
+ using binary search, and sort products by price or stock.
+
+Detailed Method Requirements:
+
+addProduct(String productId, String name, String category, double price, int stock): Adds a product to the inventory.
+
+Product findProductByName(String name): Efficiently finds a product by its name using binary search.
+
+List<Product> sortProductsByPrice(): Returns a list of products sorted by price.
+
+List<Product> sortProductsByStock(): Returns a list of products sorted by stock level.
+
+
+
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.List;
+
+public class ProductInventorySystem {
+  public static class Product implements Comparable<Product> {
+    private String productId;
+    private String name;
+    private String category;
+    private double price;
+    private int stock;
+
+    public Product(String productId, String name, String category, double price, int stock) {
+      if ((productId == null || productId.isEmpty()) && price == 0 && stock == 0) {
+        this.name = name;
+      } else {
+        if (productId == null || productId.isEmpty()) {
+          throw new IllegalArgumentException("Product ID cannot be null or empty.");
+        }
+        if (name == null || name.isEmpty()) {
+          throw new IllegalArgumentException("Name cannot be null or empty.");
+        }
+        if (category == null || category.isEmpty()) {
+          throw new IllegalArgumentException("Category cannot be null or empty.");
+        }
+        if (price < 0) {
+          throw new IllegalArgumentException("Price cannot be negative.");
+        }
+        if (stock < 0) {
+          throw new IllegalArgumentException("Stock cannot be negative.");
+        }
+        this.productId = productId;
+        this.name = name;
+        this.category = category;
+        this.price = price;
+        this.stock = stock;
+      }
+    }
+
+    @Override
+    public int compareTo(Product other) {
+      return this.name.compareTo(other.name);
+    }
+
+    public String getName() {
+      return name;
+    }
+
+    public double getPrice() {
+      return price;
+    }
+
+    public int getStock() {
+      return stock;
+    }
+  }
+
+  private List<Product> products;
+
+  public ProductInventorySystem() {
+    this.products = new ArrayList<>();
+  }
+
+  public void addProduct(String productId, String name, String category, double price, int stock) {
+    products.add(new Product(productId, name, category, price, stock));
+    products.sort(Comparator.comparing(Product::getName));
+  }
+
+  public Product findProductByName(String name) {
+    Comparator<Product> nameComparator = Comparator.comparing(Product::getName);
+    int index = Collections.binarySearch(products, null, (prod, dummy) -> nameComparator.compare(prod, new Product("", name, "", 0, 0)));
+    if (index >= 0) {
+      return products.get(index);
+    }
+    throw new IllegalArgumentException("Product with specified name not found");
+  }
+
+
+  public List<Product> sortProductsByPrice() {
+    List<Product> sortedList = new ArrayList<>(products);
+    sortedList.sort(Comparator.comparingDouble(Product::getPrice));
+    return sortedList;
+  }
+
+  public List<Product> sortProductsByStock() {
+    List<Product> sortedList = new ArrayList<>(products);
+    sortedList.sort(Comparator.comparingInt(Product::getStock));
+    return sortedList;
+  }
+}
+
+-- TESTS
+
+public class Main {
+  public static void main(String[] args) {
+    ProductInventorySystem library = new ProductInventorySystem();
+
+    //TEST
+    library.addProduct("001", "How to be rich", "Business", 25.99, 50);
+
+    try {
+      library.addProduct("", "Java in Practice", "Programming", 15.99, 30);
+      assert false;
+    } catch (IllegalArgumentException e) {
+      assert true;
+    }
+    //TEST_END
+
+    //TEST
+    try {
+      library.addProduct("002", "Java in Practice", "Programming", -15.99, 30);
+      assert false;
+    } catch (IllegalArgumentException e) {
+      assert true;
+    }
+    //TEST_END
+
+    //TEST
+    ProductInventorySystem.Product result = library.findProductByName("How to be rich");
+    assert result.getName().equals("How to be rich");
+    //TEST_END
+
+    //TEST
+    try {
+      library.findProductByName("Non Existent");
+      assert false;
+    } catch (IllegalArgumentException e) {
+      assert true;
+    }
+    //TEST_END
+
+    //TEST
+    library.addProduct("003", "C++ Demystified", "Programming", 29.99, 15);
+    var sortedProducts = library.sortProductsByPrice();
+    assert sortedProducts.get(0).getPrice() <= sortedProducts.get(1).getPrice();
+    //TEST_END
+
+    //TEST
+    var sortedProducts2 = library.sortProductsByStock();
+    assert sortedProducts2.get(0).getStock() <= sortedProducts2.get(1).getStock();
+    //TEST_END
+  }
+}
+
+
+------------------------------------------------------------------------------------------------------------------------
+
+17 - rework
+
+You are tasked with building a robust system for a social media platform that
+ manages user relationships. The system should allow for efficiently checking direct
+ friendships, discovering friends of friends, and finding common connections between users.
+
+Create the SocialMediaConnectionManager class that uses a HashMap to represent a network
+ of users and their connections. The class should support adding new friendships, checking
+ if two users are directly connected, and finding both indirect connections and common friends.
+
+Detailed Method Requirements:
+
+addConnection(String userId1, String userId2): Establishes a bidirectional friendship between two users.
+
+boolean areFriends(String userId1, String userId2): Checks if two users are directly connected.
+
+Set<String> getFriendsOfFriends(String userId): Returns a set of users who are two degrees of separation away.
+
+Set<String> getCommonConnections(String userId1, String userId2): Finds common friends between two users.
+
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Map;
+import java.util.Set;
+
+public class SocialMediaConnectionManager {
+  private Map<String, Set<String>> userConnections;
+
+  public SocialMediaConnectionManager() {
+    userConnections = new HashMap<>();
+  }
+
+  public void addConnection(String userId1, String userId2) {
+    if (userId1 == null || userId1.isEmpty() || userId2 == null || userId2.isEmpty()) {
+      throw new IllegalArgumentException("User IDs cannot be null or empty");
+    }
+    userConnections.computeIfAbsent(userId1, k -> new HashSet<>()).add(userId2);
+    userConnections.computeIfAbsent(userId2, k -> new HashSet<>()).add(userId1);
+  }
+
+  public boolean areFriends(String userId1, String userId2) {
+    if (userId1 == null || userId1.isEmpty() || userId2 == null || userId2.isEmpty()) {
+      throw new IllegalArgumentException("User IDs cannot be null or empty");
+    }
+    Set<String> friends = userConnections.get(userId1);
+    return friends != null && friends.contains(userId2);
+  }
+
+  public Set<String> getFriendsOfFriends(String userId) {
+    if (userId == null || userId.isEmpty()) {
+      throw new IllegalArgumentException("User ID cannot be null or empty");
+    }
+    Set<String> result = new HashSet<>();
+    Set<String> directFriends = userConnections.getOrDefault(userId, Collections.emptySet());
+    for (String friend : directFriends) {
+      Set<String> friendsOfFriend = userConnections.getOrDefault(friend, Collections.emptySet());
+      result.addAll(friendsOfFriend);
+    }
+    result.remove(userId);
+    return result;
+  }
+
+  public Set<String> getCommonConnections(String userId1, String userId2) {
+    if (userId1 == null || userId1.isEmpty() || userId2 == null || userId2.isEmpty()) {
+      throw new IllegalArgumentException("User IDs cannot be null or empty");
+    }
+    Set<String> friends1 = userConnections.getOrDefault(userId1, Collections.emptySet());
+    Set<String> friends2 = userConnections.getOrDefault(userId2, Collections.emptySet());
+    Set<String> common = new HashSet<>(friends1);
+    common.retainAll(friends2);
+    return common;
+  }
+}
+
+-- TESTS
+import java.util.Set;
+
+public class Main {
+  public static void main(String[] args) {
+    SocialMediaConnectionManager manager = new SocialMediaConnectionManager();
+
+    //TEST
+    manager.addConnection("user1", "user2");
+    manager.addConnection("user2", "user3");
+    //TEST_END
+
+    //TEST
+    try {
+      manager.addConnection("user4", null);
+      assert false;
+    } catch (IllegalArgumentException e) {
+      assert true;
+    }
+    //TEST_END
+
+    //TEST
+    assert manager.areFriends("user1", "user2");
+    //TEST_END
+
+    //TEST
+    assert !manager.areFriends("user1", "user3");
+    //TEST_END
+
+    //TEST
+    try {
+      manager.areFriends("user1", null);
+      ;
+      assert false;
+    } catch (IllegalArgumentException e) {
+      assert true;
+    }
+    //TEST_END
+
+    //TEST
+    try {
+      manager.areFriends("", "user2");
+      ;
+      assert false;
+    } catch (IllegalArgumentException e) {
+      assert true;
+    }
+    //TEST_END
+
+    //TEST
+    Set<String> friendsOfFriends = manager.getFriendsOfFriends("user1");
+    assert friendsOfFriends.contains("user3");
+    //TEST_END
+
+    //TEST
+    try {
+      manager.getFriendsOfFriends(null);
+      assert false;
+    } catch (IllegalArgumentException e) {
+      assert true;
+    }
+    //TEST_END
+
+    //TEST
+    manager.addConnection("user3", "user4");
+    manager.addConnection("user2", "user4");
+    Set<String> commonConnections = manager.getCommonConnections("user2", "user3");
+    assert commonConnections.contains("user4");
+  }
+}
+
+
+------------------------------------------------------------------------------------------------------------------------
+
+18 - Rework from last week - brand new submission
+
+You are tasked with creating a navigation system for a city that includes dynamic updates
+ such as road closures and traffic jams. The system should provide users with the shortest
+ path between two points in the city, adjusting routes based on real-time data.
+
+Challenge:
+Implement the CityNavigationSystem class using graph structures to represent the city's
+ road network. The system should be able to add roads, update road statuses (open or closed),
+ and compute the shortest path between two points using Dijkstra's algorithm.
+
+Helper Method Requirements:
+
+addRoad(String startPoint, String endPoint, int distance): Adds a bidirectional road between
+two points with a specified distance.
+
+updateRoadStatus(String startPoint, String endPoint, boolean isOpen): Updates the status of
+a road (open or closed).
+
+List<String> findShortestPath(String startPoint, String endPoint): Finds the shortest path
+between two points considering only open roads.
+
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.PriorityQueue;
+import java.util.Set;
+
+public class CityNavigationSystem {
+  private static class Road {
+    String endPoint;
+    int distance;
+    boolean isOpen;
+
+    Road(String endPoint, int distance, boolean isOpen) {
+      if(distance <= 0 ) {
+        throw new IllegalArgumentException("invalid distance");
+      }
+      this.endPoint = endPoint;
+      this.distance = distance;
+      this.isOpen = isOpen;
+    }
+  }
+
+  private Map<String, List<Road>> cityMap;
+
+  public CityNavigationSystem() {
+    cityMap = new HashMap<>();
+  }
+
+  public void addRoad(String startPoint, String endPoint, int distance) {
+    cityMap.computeIfAbsent(startPoint, k -> new ArrayList<>()).add(new Road(endPoint, distance, true));
+    cityMap.computeIfAbsent(endPoint, k -> new ArrayList<>()).add(new Road(startPoint, distance, true));
+  }
+
+  public void updateRoadStatus(String startPoint, String endPoint, boolean isOpen) {
+    if (cityMap.containsKey(startPoint)) {
+      cityMap.get(startPoint).stream()
+          .filter(road -> road.endPoint.equals(endPoint))
+          .forEach(road -> road.isOpen = isOpen);
+    }
+    if (cityMap.containsKey(endPoint)) {
+      cityMap.get(endPoint).stream()
+          .filter(road -> road.endPoint.equals(startPoint))
+          .forEach(road -> road.isOpen = isOpen);
+    }
+  }
+
+  public List<String> findShortestPath(String startPoint, String endPoint) {
+    if (!cityMap.containsKey(startPoint) || !cityMap.containsKey(endPoint)) {
+      throw new IllegalArgumentException("Start or end point does not exist in the map");
+    }
+
+    Map<String, Integer> distances = new HashMap<>();
+    Map<String, String> previous = new HashMap<>();
+    Set<String> visited = new HashSet<>();
+    PriorityQueue<String> queue = new PriorityQueue<>(Comparator.comparingInt(distances::get));
+
+    distances.put(startPoint, 0);
+    queue.add(startPoint);
+
+    while (!queue.isEmpty()) {
+      String current = queue.poll();
+      if (current.equals(endPoint)) {
+        break;
+      }
+      visited.add(current);
+
+      for (Road road : cityMap.getOrDefault(current, Collections.emptyList())) {
+        if (!road.isOpen || visited.contains(road.endPoint)) {
+          continue;
+        }
+        int newDist = distances.getOrDefault(current, Integer.MAX_VALUE) + road.distance;
+        if (newDist < distances.getOrDefault(road.endPoint, Integer.MAX_VALUE)) {
+          distances.put(road.endPoint, newDist);
+          previous.put(road.endPoint, current);
+          queue.add(road.endPoint);
+        }
+      }
+    }
+
+    if (!previous.containsKey(endPoint)) {
+      throw new IllegalArgumentException("No valid path found");
+    }
+
+    List<String> path = new ArrayList<>();
+    for (String at = endPoint; at != null; at = previous.get(at)) {
+      path.add(at);
+    }
+    Collections.reverse(path);
+    return path;
+  }
+}
+
+-- TESTS
+
+import java.util.Arrays;
+import java.util.List;
+
+public class Main {
+  public static void main(String[] args) {
+    CityNavigationSystem navigationSystem = new CityNavigationSystem();
+
+    //TEST
+    navigationSystem.addRoad("A", "B", 5);
+    navigationSystem.addRoad("B", "C", 10);
+    navigationSystem.addRoad("A", "C", 15);
+
+    navigationSystem.updateRoadStatus("A", "C", false);
+    List<String> path = navigationSystem.findShortestPath("A", "C");
+    assert path.equals(Arrays.asList("A", "B", "C"));
+    //TEST_END
+
+    //TEST
+    try {
+      navigationSystem.updateRoadStatus("B", "C", false);
+      navigationSystem.findShortestPath("A", "C");
+      assert false;
+    } catch (IllegalArgumentException e) {
+      assert true;
+    }
+    //TEST_END
+
+    //TEST
+    try {
+      navigationSystem.findShortestPath("X", "Y");
+      assert false;
+    } catch (IllegalArgumentException e) {
+      assert true;
+    }
+    //TEST_END
+
+    //TEST
+    try {
+      navigationSystem.addRoad("C", "D", -1);
+      assert false;
+    } catch (IllegalArgumentException e) {
+      assert true;
+    }
+    //TEST_END
+
+    //TEST
+    navigationSystem.updateRoadStatus("B", "C", true);
+    List<String> path2 = navigationSystem.findShortestPath("A", "C");
+    assert path2.equals(Arrays.asList("A", "B", "C"));
+    //TEST_END
+  }
+}

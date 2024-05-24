@@ -10,13 +10,13 @@ package com.powem.inv.collections;
 //Create a Java class RestaurantReservationManager that uses a LinkedList to manage reservations. Implement
 //methods to add a reservation, cancel a specific reservation, and retrieve the next reservation due.
 //
-//Methods:
+//Helper functions:
 //
 //addReservation(String reservationId, String customerName, int numberOfGuests, Date reservationTime): Adds a
 //new reservation to the list.
-
+//
 //cancelReservation(String reservationId): Removes a reservation based on its ID.
-
+//
 //getNextReservation(): Retrieves and removes the next reservation due based on the reservation time.
 
 import java.util.Comparator;

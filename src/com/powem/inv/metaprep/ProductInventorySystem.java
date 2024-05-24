@@ -17,11 +17,11 @@ package com.powem.inv.metaprep;
 //Detailed Method Requirements:
 //
 //addProduct(String productId, String name, String category, double price, int stock): Adds a product to the inventory.
-
+//
 //Product findProductByName(String name): Efficiently finds a product by its name using binary search.
-
+//
 //List<Product> sortProductsByPrice(): Returns a list of products sorted by price.
-
+//
 //List<Product> sortProductsByStock(): Returns a list of products sorted by stock level.
 
 

@@ -17,6 +17,9 @@ import java.util.List;
 
 public class StringDecoder {
   public static List<String> decode(String s) {
+    if (s == null || s.isEmpty()) {
+      throw new IllegalArgumentException("Input cannot be null or empty");
+    }
     List<String> decoded = new ArrayList<>();
     int i = 0;
     while (i < s.length()) {
@@ -99,6 +102,24 @@ public class StringDecoder {
 //    // TEST
 //    try {
 //      StringDecoder.decode("#5Hell");
+//      assert false;
+//    } catch (IllegalArgumentException e) {
+//      assert true;
+//    }
+//    // TEST_END
+//
+//    // TEST
+//    try {
+//      StringDecoder.decode(null);
+//      assert false;
+//    } catch (IllegalArgumentException e) {
+//      assert true;
+//    }
+//    // TEST_END
+//
+//    // TEST
+//    try {
+//      StringDecoder.decode("");
 //      assert false;
 //    } catch (IllegalArgumentException e) {
 //      assert true;
