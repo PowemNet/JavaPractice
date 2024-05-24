@@ -1,4 +1,4 @@
-package com.powem.inv.metaprep;
+package com.powem.inv.algos;
 //Advanced Social Media Connection Management
 //Objective:
 //Develop a system using Java to manage user connections on a social media platform,

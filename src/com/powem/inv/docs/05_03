@@ -868,7 +868,7 @@ public class Main {
 }
 
 ------------------------------------------------------------------------------------------------------------------------
-9-
+9- [FEEDBACK - "too simple" - replaced]
 Day 4: Emergency Room Queue Management
 
 You are developing a system for an emergency room (ER) where patients are prioritized based on the severity of their condition. Each patient
@@ -1265,7 +1265,7 @@ public class Main {
 }
 
 ------------------------------------------------------------------------------------------------------------------------
-12-  Day 6: Customer Support Ticket System
+12-  Day 6: Customer Support Ticket System [FEEDBACK - not complex enough. replaced]
 
 You are tasked with developing a system for managing customer support tickets for a tech company.
 Each support ticket includes a ticket ID, customer details, the issue category, and an urgency level.

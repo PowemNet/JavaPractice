@@ -1,4 +1,4 @@
-package com.powem.inv.metaprep;
+package com.powem.inv.algos;
 //Efficient Management of a Product Inventory System
 //Objective:
 //Learn to use arrays and binary search techniques in Java to manage and optimize searches

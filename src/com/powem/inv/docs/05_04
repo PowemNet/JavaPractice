@@ -531,3 +531,577 @@ public class Main {
     //TEST_END
   }
 }
+
+------------------------------------------------------------------------------------------------------------------------
+
+19 - Rework from last week - brand new submission
+
+Create a secure storage system for messages where each message is
+ stored in an encrypted format. The system should provide functionalities to add messages,
+ retrieve them, and delete them securely, all while ensuring that the operations are performed efficiently.
+
+Implement the SecureMessageStorage class using a combination of HashMap for storage and
+ the Caesar Cipher encryption mechanism for encrypting the messages before
+ storing them. The system should also support decryption for message retrieval.
+
+Detailed Method Requirements:
+
+addMessage(String id, String message): Encrypts and stores the message associated with a unique ID.
+
+String getMessage(String id): Decrypts and retrieves the message associated with the given ID.
+
+boolean deleteMessage(String id): Deletes the message associated with the given ID.
+
+
+import java.util.HashMap;
+import java.util.Map;
+
+public class SecureMessageStorage {
+  private Map<String, String> messages;
+  private final int shift = 4;
+
+  public SecureMessageStorage() {
+    messages = new HashMap<>();
+  }
+
+  public void addMessage(String id, String message) {
+    if (id == null || id.isEmpty()) {
+      throw new IllegalArgumentException("ID cannot be null or empty.");
+    }
+    if (message == null) {
+      throw new IllegalArgumentException("Message cannot be null.");
+    }
+    messages.put(id, encrypt(message));
+  }
+
+  public String getMessage(String id) {
+    if (id == null || id.isEmpty()) {
+      throw new IllegalArgumentException("ID cannot be null or empty.");
+    }
+    String encryptedMessage = messages.get(id);
+    if (encryptedMessage == null) {
+      throw new IllegalArgumentException("Message not found for given ID.");
+    }
+    return decrypt(encryptedMessage);
+  }
+
+  public boolean deleteMessage(String id) {
+    if (id == null || id.isEmpty()) {
+      throw new IllegalArgumentException("ID cannot be null or empty.");
+    }
+    if (messages.containsKey(id)) {
+      messages.remove(id);
+      return true;
+    }
+    return false;
+  }
+
+  private String encrypt(String message) {
+    return shift(message, shift);
+  }
+
+  private String decrypt(String message) {
+    return shift(message, -shift);
+  }
+
+  private String shift(String text, int shift) {
+    shift = (shift % 26 + 26) % 26;
+    StringBuilder encrypted = new StringBuilder();
+    for (char character : text.toCharArray()) {
+      if (character >= 'a' && character <= 'z') {
+        character = (char) ((character - 'a' + shift) % 26 + 'a');
+      } else if (character >= 'A' && character <= 'Z') {
+        character = (char) ((character - 'A' + shift) % 26 + 'A');
+      }
+      encrypted.append(character);
+    }
+    return encrypted.toString();
+  }
+
+}
+
+
+-- TESTS:
+public class Main {
+  public static void main(String[] args) {
+    SecureMessageStorage storage = new SecureMessageStorage();
+
+    //TEST
+    storage.addMessage("001", "Hello World");
+    String message = storage.getMessage("001");
+    assert "Hello World".equals(message);
+    //TEST_END
+
+    //TEST
+    try {
+      storage.addMessage(null, "Test Message");
+      assert false;
+    } catch (IllegalArgumentException e) {
+      assert true;
+    }
+    //TEST_END
+
+    //TEST
+    try {
+      storage.addMessage("", "Test Message");
+      assert false;
+    } catch (IllegalArgumentException e) {
+      assert true;
+    }
+    //TEST_END
+
+    //TEST
+    try {
+      storage.addMessage("002", null);
+      assert false;
+    } catch (IllegalArgumentException e) {
+      assert true;
+    }
+    //TEST_END
+
+    //TEST
+    try {
+      storage.getMessage("003");
+      assert false;
+    } catch (IllegalArgumentException e) {
+      assert true;
+    }
+    //TEST_END
+
+    //TEST
+    storage.addMessage("004", "Temporary Message");
+    assert storage.deleteMessage("004");
+    //TEST_END
+
+    //TEST
+    assert !storage.deleteMessage("999");
+    //TEST_END
+
+    //TEST
+    try {
+      storage.deleteMessage("");
+      assert false;
+    } catch (IllegalArgumentException e) {
+      assert true;
+    }
+    //TEST_END
+
+    //TEST
+    try {
+      storage.deleteMessage(null);
+      assert false;
+    } catch (IllegalArgumentException e) {
+      assert true;
+    }
+    //TEST_END
+  }
+}
+------------------------------------------------------------------------------------------------------------------------
+
+20 - Rework from last week - brand new submission
+
+Create a system for a social network that can detect and categorize different communities
+or clusters of users based on their interactions and friendships. This system should help in targeted advertising,
+content delivery, and enhancing user engagement by promoting community-specific activities and content.
+
+Implement the CommunityDetector class that uses graph structures to represent the social network and applies the Louvain
+method for community detection.
+
+Helper Method Requirements:
+
+addUser(String userId, List<String> friends): Adds a user and their list of friends to the network.
+
+Map<String, Integer> detectCommunities(): Applies the Louvain method to detect communities and returns a mapping of user IDs
+to their respective community identifiers.
+
+List<String> getCommunityMembers(int communityId): Retrieves a list of all users belonging to a specific community.
+
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
+import java.util.Queue;
+import java.util.Set;
+
+public class CommunityDetector {
+  private Map<String, Set<String>> userGraph;
+  private Map<String, Integer> communityMap;
+
+  public CommunityDetector() {
+    userGraph = new HashMap<>();
+    communityMap = new HashMap<>();
+  }
+
+  public void addUser(String userId, List<String> friends) {
+    if (userId == null || userId.isEmpty() || friends == null) {
+      throw new IllegalArgumentException("Inputs cannot be null or empty.");
+    }
+    userGraph.putIfAbsent(userId, new HashSet<>());
+    for (String friend : friends) {
+      if (friend == null || friend.isEmpty()) {
+        continue;
+      }
+      userGraph.get(userId).add(friend);
+      userGraph.putIfAbsent(friend, new HashSet<>());
+      userGraph.get(friend).add(userId);
+    }
+  }
+
+  public Map<String, Integer> detectCommunities() {
+    int communityId = 0;
+    for (String user : userGraph.keySet()) {
+      if (!communityMap.containsKey(user)) {
+        communityMap.put(user, communityId);
+        exploreCommunity(user, communityId);
+        communityId++;
+      }
+    }
+    return communityMap;
+  }
+
+  private void exploreCommunity(String user, int communityId) {
+    Queue<String> queue = new LinkedList<>();
+    queue.add(user);
+
+    while (!queue.isEmpty()) {
+      String currentUser = queue.poll();
+      for (String friend : userGraph.get(currentUser)) {
+        if (!communityMap.containsKey(friend)) {
+          communityMap.put(friend, communityId);
+          queue.add(friend);
+        }
+      }
+    }
+  }
+
+  public List<String> getCommunityMembers(int communityId) {
+    if (communityId < 0) {
+      throw new IllegalArgumentException("invalid communityId");
+    }
+    List<String> members = new ArrayList<>();
+    for (Map.Entry<String, Integer> entry : communityMap.entrySet()) {
+      if (entry.getValue() == communityId) {
+        members.add(entry.getKey());
+      }
+    }
+    return members;
+  }
+}
+
+--TESTS---
+
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Map;
+
+public class Main {
+  public static void main(String[] args) {
+    CommunityDetector detector = new CommunityDetector();
+
+    //TEST
+    detector.addUser("Alice", Arrays.asList("Bob", "Charlie"));
+    detector.addUser("Bob", Arrays.asList("Alice", "David"));
+    detector.addUser("Charlie", Arrays.asList("Alice"));
+    detector.addUser("David", Arrays.asList("Bob"));
+    detector.addUser("Eve", Arrays.asList("Frank"));
+    detector.addUser("Frank", Arrays.asList("Eve"));
+
+    Map<String, Integer> communities = detector.detectCommunities();
+    assert communities.get("Alice").equals(communities.get("Charlie"));
+    //TEST_END
+
+    //TEST
+    assert communities.get("Alice").equals(communities.get("David"));
+    //TEST_END
+
+    //TEST
+    assert !communities.get("Alice").equals(communities.get("Eve"));
+    //TEST_END
+
+    //TEST
+    detector.addUser("Isolated", new ArrayList<>());
+    assert detector.detectCommunities().containsKey("Isolated");
+    //TEST_END
+
+    //TEST
+    try {
+      detector.addUser(null, Arrays.asList("Bob"));
+      assert false;
+    } catch (IllegalArgumentException e) {
+      assert true;
+    }
+    //TEST_END
+
+    //TEST
+    try {
+      detector.addUser("Tom", null);
+      assert false;
+    } catch (IllegalArgumentException e) {
+      assert true;
+    }
+    //TEST_END
+
+    //TEST
+    List<String> community0 = detector.getCommunityMembers(0);
+    assert community0.contains("Alice") && community0.contains("Bob");
+    //TEST_END
+
+    //TEST
+    try {
+      detector.getCommunityMembers(-1);
+      assert false;
+    } catch (IllegalArgumentException e) {
+      assert true;
+    }
+    //TEST_END
+  }
+}
+
+------------------------------------------------------------------------------------------------------------------------
+
+21 - Rework from last week - brand new submission
+
+Designing an algorithm to optimally distribute resources across a network of nodes,
+ensuring that each node maintains a minimum required resource level. The network's connectivity and
+each node's initial resources vary.
+
+The system should have a class ResourceDistributor balance resource distribution across a connected graph in a way that minimizes
+the total movement of resources while ensuring that no node falls below a specified minimum resource level.
+
+Details:
+
+Nodes represent different stations or entities that require resources to function.
+
+Edges represent possible paths for resource transfer.
+
+Each node has a current resource level and a minimum required resource level.
+
+Resources can be moved between directly connected nodes.
+
+required function signature:
+public class ResourceDistributor {
+
+  public void addNode(int nodeId, int currentResources, int minRequiredResources);
+
+  public void addEdge(int nodeId1, int nodeId2);
+
+  public void distributeResources();
+
+  public Map<Integer, Integer> getNodeResourceLevels();
+}
+
+
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.concurrent.atomic.AtomicBoolean;
+
+public class ResourceDistributor {
+  private Map<Integer, Node> nodes;
+  private Map<Integer, List<Integer>> graph;
+
+  public ResourceDistributor() {
+    nodes = new HashMap<>();
+    graph = new HashMap<>();
+  }
+
+  public void addNode(int nodeId, int currentResources, int minRequiredResources) {
+    if (nodeId < 1 || currentResources < 1 || minRequiredResources < 1) {
+      throw new IllegalArgumentException("invalid input");
+    }
+    nodes.put(nodeId, new Node(currentResources, minRequiredResources));
+    graph.put(nodeId, new ArrayList<>());
+  }
+
+  public void addEdge(int nodeId1, int nodeId2) {
+    if (nodeId1 < 1 || nodeId2 < 1) {
+      throw new IllegalArgumentException("invalid input");
+    }
+    graph.get(nodeId1).add(nodeId2);
+    graph.get(nodeId2).add(nodeId1);
+  }
+
+  public void distributeResources() {
+    AtomicBoolean needsAdjustment = new AtomicBoolean(false);
+    do {
+      needsAdjustment.set(false);
+      Map<Integer, Integer> allocations = new HashMap<>();
+
+      for (Map.Entry<Integer, List<Integer>> entry : graph.entrySet()) {
+        int nodeId = entry.getKey();
+        Node currentNode = nodes.get(nodeId);
+        int excess = currentNode.currentResources - currentNode.minRequiredResources;
+
+        if (excess > 0) {
+          List<Integer> neighbors = entry.getValue();
+          int totalNeeded = 0;
+
+          for (int neighborId : neighbors) {
+            Node neighbor = nodes.get(neighborId);
+            int needed = Math.max(0, neighbor.minRequiredResources - neighbor.currentResources);
+            totalNeeded += needed;
+          }
+
+          for (int neighborId : neighbors) {
+            Node neighbor = nodes.get(neighborId);
+            if (totalNeeded > 0) {
+              int needed = Math.max(0, neighbor.minRequiredResources - neighbor.currentResources);
+              int give = (int) ((double) needed / totalNeeded * excess);
+
+              allocations.put(neighborId, allocations.getOrDefault(neighborId, 0) + give);
+              currentNode.currentResources -= give;
+            }
+          }
+        }
+      }
+
+      allocations.forEach((id, allocation) -> {
+        Node node = nodes.get(id);
+        node.currentResources += allocation;
+        if (node.currentResources >= node.minRequiredResources) {
+          needsAdjustment.set(true);
+        }
+      });
+
+    } while (needsAdjustment.get());
+  }
+
+
+  public Map<Integer, Integer> getNodeResourceLevels() {
+    Map<Integer, Integer> resourceLevels = new HashMap<>();
+    for (Map.Entry<Integer, Node> entry : nodes.entrySet()) {
+      resourceLevels.put(entry.getKey(), entry.getValue().currentResources);
+    }
+    return resourceLevels;
+  }
+
+  static class Node {
+    int currentResources;
+    int minRequiredResources;
+
+    Node(int currentResources, int minRequiredResources) {
+      this.currentResources = currentResources;
+      this.minRequiredResources = minRequiredResources;
+    }
+  }
+}
+
+--- TESTS ---
+
+public class Main {
+  public static void main(String[] args) {
+    ResourceDistributor distributor = new ResourceDistributor();
+
+    //TEST
+    distributor.addNode(1, 100, 80);
+    distributor.addNode(2, 30, 50);
+    distributor.addEdge(1, 2);
+    distributor.distributeResources();
+
+    assert distributor.getNodeResourceLevels().get(1) >= 80;
+    //TEST_END
+
+    //TEST
+    try {
+      distributor.addEdge(1, -2);
+      assert false;
+    } catch (IllegalArgumentException e) {
+      assert true;
+    }
+    //TEST_END
+
+    //TEST
+    try {
+      distributor.addEdge(1, 0);
+      assert false;
+    } catch (IllegalArgumentException e) {
+      assert true;
+    }
+    //TEST_END
+
+    //TEST
+    assert distributor.getNodeResourceLevels().get(2) >= 50;
+    //TEST_END
+
+    //TEST
+    distributor.addNode(3, 60, 60);
+    distributor.addEdge(2, 3);
+    distributor.distributeResources();
+    assert distributor.getNodeResourceLevels().get(3) == 60;
+    //TEST_END
+
+    //TEST
+    distributor.addNode(4, 40, 30);
+    distributor.addNode(5, 50, 50);
+    distributor.addEdge(4, 5);
+    distributor.distributeResources();
+
+    assert distributor.getNodeResourceLevels().get(4) >= 30;
+    //TEST_END
+
+    //TEST
+    assert distributor.getNodeResourceLevels().get(5) == 50;
+    //TEST_END
+
+    //TEST
+    try {
+      distributor.addNode(6, -10, 20);
+      assert false;
+    } catch (IllegalArgumentException e) {
+      assert true;
+    }
+    //TEST_END
+
+    //TEST
+    try {
+      distributor.addNode(0, 10, 20);
+      assert false;
+    } catch (IllegalArgumentException e) {
+      assert true;
+    }
+    //TEST_END
+
+    //TEST
+    try {
+      distributor.addNode(1, 1, 0);
+      assert false;
+    } catch (IllegalArgumentException e) {
+      assert true;
+    }
+    //TEST_END
+
+    //TEST: Check distribution after adding edges between multiple nodes
+    distributor.addNode(7, 25, 25);
+    distributor.addEdge(5, 7);
+    distributor.distributeResources();
+    assert distributor.getNodeResourceLevels().get(7) == 25;
+    //TEST_END
+  }
+}
+
+------------------------------------------------------------------------------------------------------------------------
+
+22 - Rework from last week - brand new submission
+
+
+------------------------------------------------------------------------------------------------------------------------
+
+23 - Rework from last week - brand new submission
+
+
+
+------------------------------------------------------------------------------------------------------------------------
+
+24 - Rework from last week - brand new submission
+
+
+
+------------------------------------------------------------------------------------------------------------------------
+
+25 - Rework from last week - brand new submission
+
+
