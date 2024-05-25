@@ -1,21 +1,30 @@
-import com.powem.inv.algos.ResourceDistributor;
+import com.powem.inv.algos.NetworkTrafficOptimizer;
+import java.util.Map;
 
 public class Main {
   public static void main(String[] args) {
-    ResourceDistributor distributor = new ResourceDistributor();
+    testBasicConnectivity();
+    testCapacityLimits();
+    testShortestPathRouting();
+  }
+
+  // Test basic connectivity and packet routing
+  private static void testBasicConnectivity() {
+    NetworkTrafficOptimizer optimizer = new NetworkTrafficOptimizer();
+    optimizer.addNode("A");
+    optimizer.addNode("B");
+    optimizer.addLink("A", "B", 100);
+
+    optimizer.routePacket("A", "B", 50);
 
     //TEST
-    distributor.addNode(1, 100, 80);
-    distributor.addNode(2, 30, 50);
-    distributor.addEdge(1, 2);
-    distributor.distributeResources();
-
-    assert distributor.getNodeResourceLevels().get(1) >= 80;
+    Map<String, Integer> load = optimizer.getCurrentLoadOnLinks();
+    assert load.get("A->B") == 50;
     //TEST_END
 
     //TEST
     try {
-      distributor.addEdge(1, -2);
+      optimizer.addNode("");
       assert false;
     } catch (IllegalArgumentException e) {
       assert true;
@@ -24,40 +33,7 @@ public class Main {
 
     //TEST
     try {
-      distributor.addEdge(1, 0);
-      assert false;
-    } catch (IllegalArgumentException e) {
-      assert true;
-    }
-    //TEST_END
-
-    //TEST
-    assert distributor.getNodeResourceLevels().get(2) >= 50;
-    //TEST_END
-
-    //TEST
-    distributor.addNode(3, 60, 60);
-    distributor.addEdge(2, 3);
-    distributor.distributeResources();
-    assert distributor.getNodeResourceLevels().get(3) == 60;
-    //TEST_END
-
-    //TEST
-    distributor.addNode(4, 40, 30);
-    distributor.addNode(5, 50, 50);
-    distributor.addEdge(4, 5);
-    distributor.distributeResources();
-
-    assert distributor.getNodeResourceLevels().get(4) >= 30;
-    //TEST_END
-
-    //TEST
-    assert distributor.getNodeResourceLevels().get(5) == 50;
-    //TEST_END
-
-    //TEST
-    try {
-      distributor.addNode(6, -10, 20);
+      optimizer.addNode(null);
       assert false;
     } catch (IllegalArgumentException e) {
       assert true;
@@ -66,7 +42,7 @@ public class Main {
 
     //TEST
     try {
-      distributor.addNode(0, 10, 20);
+      optimizer.addLink("", "B", 100);
       assert false;
     } catch (IllegalArgumentException e) {
       assert true;
@@ -75,18 +51,82 @@ public class Main {
 
     //TEST
     try {
-      distributor.addNode(1, 1, 0);
+      optimizer.addLink("A", null, 100);
       assert false;
     } catch (IllegalArgumentException e) {
       assert true;
     }
     //TEST_END
 
-    //TEST: Check distribution after adding edges between multiple nodes
-    distributor.addNode(7, 25, 25);
-    distributor.addEdge(5, 7);
-    distributor.distributeResources();
-    assert distributor.getNodeResourceLevels().get(7) == 25;
+    //TEST
+    try {
+      optimizer.addLink("A", "B", -4);
+      assert false;
+    } catch (IllegalArgumentException e) {
+      assert true;
+    }
+    //TEST_END
+
+    //TEST
+    try {
+      optimizer.routePacket("", "B", 100);
+      assert false;
+    } catch (IllegalArgumentException e) {
+      assert true;
+    }
+    //TEST_END
+
+    //TEST
+    try {
+      optimizer.routePacket("A", null, 100);
+      assert false;
+    } catch (IllegalArgumentException e) {
+      assert true;
+    }
+    //TEST_END
+
+    //TEST
+    try {
+      optimizer.routePacket("A", "B", -4);
+      assert false;
+    } catch (IllegalArgumentException e) {
+      assert true;
+    }
+    //TEST_END
+  }
+
+  // Test behavior under capacity limits
+  private static void testCapacityLimits() {
+    NetworkTrafficOptimizer optimizer = new NetworkTrafficOptimizer();
+    optimizer.addNode("A");
+    optimizer.addNode("B");
+    optimizer.addLink("A", "B", 50);
+
+    optimizer.routePacket("A", "B", 30);
+    optimizer.routePacket("A", "B", 30);
+
+    //TEST
+    Map<String, Integer> load = optimizer.getCurrentLoadOnLinks();
+    assert load.get("A->B") <= 50;
+    //TEST_END
+  }
+
+  // Test that the shortest path is chosen for routing
+  private static void testShortestPathRouting() {
+    NetworkTrafficOptimizer optimizer = new NetworkTrafficOptimizer();
+    optimizer.addNode("A");
+    optimizer.addNode("B");
+    optimizer.addNode("C");
+    optimizer.addLink("A", "B", 100);
+    optimizer.addLink("B", "C", 100);
+    optimizer.addLink("A", "C", 50);
+
+    optimizer.routePacket("A", "C", 25);
+
+    //TEST
+    Map<String, Integer> load = optimizer.getCurrentLoadOnLinks();
+    assert load.get("A->C") == 25 : "Failed: Packet should take the direct shorter route A->C";
+    System.out.println("Test Passed: Shortest path routing.");
     //TEST_END
   }
 }
