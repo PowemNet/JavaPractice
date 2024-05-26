@@ -1,132 +1,74 @@
-import com.powem.inv.algos.NetworkTrafficOptimizer;
+import com.powem.inv.algos.SocialNetworkAnalysis;
+import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 public class Main {
-  public static void main(String[] args) {
-    testBasicConnectivity();
-    testCapacityLimits();
-    testShortestPathRouting();
-  }
-
-  // Test basic connectivity and packet routing
-  private static void testBasicConnectivity() {
-    NetworkTrafficOptimizer optimizer = new NetworkTrafficOptimizer();
-    optimizer.addNode("A");
-    optimizer.addNode("B");
-    optimizer.addLink("A", "B", 100);
-
-    optimizer.routePacket("A", "B", 50);
-
-    //TEST
-    Map<String, Integer> load = optimizer.getCurrentLoadOnLinks();
-    assert load.get("A->B") == 50;
-    //TEST_END
-
-    //TEST
-    try {
-      optimizer.addNode("");
-      assert false;
-    } catch (IllegalArgumentException e) {
-      assert true;
+    public static void main(String[] args) {
+        testIdentifyTopInfluencers();
+        testEmptyNetwork();
+        testSingleUserNetwork();
+        testNetworkWithIsolatedUsers();
     }
-    //TEST_END
 
-    //TEST
-    try {
-      optimizer.addNode(null);
-      assert false;
-    } catch (IllegalArgumentException e) {
-      assert true;
+
+    private static void testIdentifyTopInfluencers() {
+        SocialNetworkAnalysis analysis = new SocialNetworkAnalysis();
+        Map<String, List<String>> network = new HashMap<>();
+        network.put("Alice", List.of("Bob", "Carol", "Dave"));
+        network.put("Bob", List.of("Alice", "Eve", "Carol"));
+        network.put("Carol", List.of("Alice", "Bob", "Dave", "Eve"));
+        network.put("Dave", List.of("Alice", "Carol"));
+        network.put("Eve", List.of("Bob", "Carol"));
+
+        List<String> influencers = analysis.identifyInfluencers(network, 3);
+
+        //TEST
+        System.out.println("Top 3 Influencers: " + influencers);
+        assert influencers.size() == 3 : "Test Failed: Should identify exactly 3 top influencers.";
+        assert influencers.containsAll(List.of("Carol", "Alice", "Bob")) : "Test Failed: Incorrect influencers identified.";
+        System.out.println("Test Passed: Correctly identified the top influencers.");
+        //TEST_END
     }
-    //TEST_END
 
-    //TEST
-    try {
-      optimizer.addLink("", "B", 100);
-      assert false;
-    } catch (IllegalArgumentException e) {
-      assert true;
+    private static void testEmptyNetwork() {
+        SocialNetworkAnalysis analysis = new SocialNetworkAnalysis();
+        Map<String, List<String>> network = new HashMap<>();
+
+        List<String> influencers = analysis.identifyInfluencers(network, 3);
+
+        //TEST
+        assert influencers.isEmpty() : "Test Failed: Empty network should result in no influencers.";
+        System.out.println("Test Passed: No influencers identified in an empty network.");
+        //TEST_END
     }
-    //TEST_END
 
-    //TEST
-    try {
-      optimizer.addLink("A", null, 100);
-      assert false;
-    } catch (IllegalArgumentException e) {
-      assert true;
+    private static void testSingleUserNetwork() {
+        SocialNetworkAnalysis analysis = new SocialNetworkAnalysis();
+        Map<String, List<String>> network = new HashMap<>();
+        network.put("Alice", List.of());
+
+        List<String> influencers = analysis.identifyInfluencers(network, 1);
+
+        //TEST
+        assert influencers.size() == 1 && influencers.contains("Alice") : "Test Failed: Single user network should identify the user as an influencer.";
+        System.out.println("Test Passed: Correctly identified the single user as an influencer.");
+        //TEST_END
     }
-    //TEST_END
 
-    //TEST
-    try {
-      optimizer.addLink("A", "B", -4);
-      assert false;
-    } catch (IllegalArgumentException e) {
-      assert true;
+    private static void testNetworkWithIsolatedUsers() {
+        SocialNetworkAnalysis analysis = new SocialNetworkAnalysis();
+        Map<String, List<String>> network = new HashMap<>();
+        network.put("Alice", List.of("Bob"));
+        network.put("Bob", List.of("Alice"));
+        network.put("Carol", List.of());
+        network.put("Dave", List.of());
+
+        List<String> influencers = analysis.identifyInfluencers(network, 2);
+
+        //TEST
+        assert influencers.size() == 2 && influencers.containsAll(List.of("Alice", "Bob")) : "Test Failed: Isolated users should not be identified as top influencers.";
+        System.out.println("Test Passed: Correctly ignored isolated users when identifying top influencers.");
+        //TEST_END
     }
-    //TEST_END
-
-    //TEST
-    try {
-      optimizer.routePacket("", "B", 100);
-      assert false;
-    } catch (IllegalArgumentException e) {
-      assert true;
-    }
-    //TEST_END
-
-    //TEST
-    try {
-      optimizer.routePacket("A", null, 100);
-      assert false;
-    } catch (IllegalArgumentException e) {
-      assert true;
-    }
-    //TEST_END
-
-    //TEST
-    try {
-      optimizer.routePacket("A", "B", -4);
-      assert false;
-    } catch (IllegalArgumentException e) {
-      assert true;
-    }
-    //TEST_END
-  }
-
-  // Test behavior under capacity limits
-  private static void testCapacityLimits() {
-    NetworkTrafficOptimizer optimizer = new NetworkTrafficOptimizer();
-    optimizer.addNode("A");
-    optimizer.addNode("B");
-    optimizer.addLink("A", "B", 50);
-
-    optimizer.routePacket("A", "B", 30);
-    optimizer.routePacket("A", "B", 30);
-
-    //TEST
-    Map<String, Integer> load = optimizer.getCurrentLoadOnLinks();
-    assert load.get("A->B") <= 50;
-    //TEST_END
-  }
-
-  // Test that the shortest path is chosen for routing
-  private static void testShortestPathRouting() {
-    NetworkTrafficOptimizer optimizer = new NetworkTrafficOptimizer();
-    optimizer.addNode("A");
-    optimizer.addNode("B");
-    optimizer.addNode("C");
-    optimizer.addLink("A", "B", 100);
-    optimizer.addLink("B", "C", 100);
-    optimizer.addLink("A", "C", 50);
-
-    optimizer.routePacket("A", "C", 25);
-
-    //TEST
-    Map<String, Integer> load = optimizer.getCurrentLoadOnLinks();
-    assert load.get("A->C") == 25 : "Failed: Packet should take the direct shorter route A->C";
-    System.out.println("Test Passed: Shortest path routing.");
-    //TEST_END
-  }
 }
