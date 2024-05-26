@@ -21,6 +21,121 @@
 //    public List<int[]> planRoute(int m, int n, int[] depot, List<int[]> wasteBlocks);
 //}
 
+
+package com.powem.inv.algos;
+
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Comparator;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.PriorityQueue;
+import java.util.Set;
+
+public class WasteCollectionPlanner {
+    private int m, n;
+    private int[] depot;
+    private List<int[]> wasteBlocks;
+
+    public WasteCollectionPlanner(int m, int n, int[] depot, List<int[]> wasteBlocks) {
+        if (m <= 0 || n <= 0) {
+            throw new IllegalArgumentException("Grid dimensions must be greater than 0");
+        }
+        if (depot == null || depot.length != 2) {
+            throw new IllegalArgumentException("Depot location must be a valid coordinate");
+        }
+        if (wasteBlocks == null || wasteBlocks.isEmpty()) {
+            throw new IllegalArgumentException("Waste blocks list cannot be null or empty");
+        }
+        this.m = m;
+        this.n = n;
+        this.depot = depot;
+        this.wasteBlocks = wasteBlocks;
+    }
+
+    public List<int[]> planRoute() {
+        List<int[]> allNodes = new ArrayList<>(wasteBlocks);
+        allNodes.add(depot);
+
+        Map<int[], Map<int[], Integer>> shortestPaths = new HashMap<>();
+        for (int[] node : allNodes) {
+            shortestPaths.put(node, dijkstra(node, allNodes));
+        }
+
+        List<int[]> route = new ArrayList<>();
+        route.add(depot);
+
+        Set<int[]> visited = new HashSet<>();
+        visited.add(depot);
+        int[] current = depot;
+
+        while (visited.size() <= wasteBlocks.size()) {
+            int[] nextNode = null;
+            int minDistance = Integer.MAX_VALUE;
+
+            for (int[] node : wasteBlocks) {
+                if (!visited.contains(node)) {
+                    int distance = shortestPaths.get(current).get(node);
+                    if (distance < minDistance) {
+                        minDistance = distance;
+                        nextNode = node;
+                    }
+                }
+            }
+
+            route.add(nextNode);
+            visited.add(nextNode);
+            current = nextNode;
+        }
+
+        route.add(depot);
+
+        return route;
+    }
+
+    private Map<int[], Integer> dijkstra(int[] start, List<int[]> allNodes) {
+        Map<int[], Integer> distances = new HashMap<>();
+        for (int[] node : allNodes) {
+            distances.put(node, Integer.MAX_VALUE);
+        }
+        distances.put(start, 0);
+
+        PriorityQueue<int[]> pq = new PriorityQueue<>(Comparator.comparingInt(distances::get));
+        pq.add(start);
+
+        while (!pq.isEmpty()) {
+            int[] current = pq.poll();
+            int currentDistance = distances.get(current);
+
+            for (int[] neighbor : getNeighbors(current, allNodes)) {
+                int distance = currentDistance + manhattanDistance(current, neighbor);
+                if (distance < distances.get(neighbor)) {
+                    distances.put(neighbor, distance);
+                    pq.add(neighbor);
+                }
+            }
+        }
+
+        return distances;
+    }
+
+    private List<int[]> getNeighbors(int[] node, List<int[]> allNodes) {
+        List<int[]> neighbors = new ArrayList<>();
+        for (int[] potentialNeighbor : allNodes) {
+            if (!Arrays.equals(node, potentialNeighbor)) {
+                neighbors.add(potentialNeighbor);
+            }
+        }
+        return neighbors;
+    }
+
+    private int manhattanDistance(int[] a, int[] b) {
+        return Math.abs(a[0] - b[0]) + Math.abs(a[1] - b[1]);
+    }
+}
+
 //TESTS
 //import com.powem.inv.algos.WasteCollectionPlanner;
 //
@@ -158,118 +273,3 @@
 //    }
 //  }
 //}
-
-
-package com.powem.inv.algos;
-
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Comparator;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.PriorityQueue;
-import java.util.Set;
-
-public class WasteCollectionPlanner {
-    private int m, n;
-    private int[] depot;
-    private List<int[]> wasteBlocks;
-
-    public WasteCollectionPlanner(int m, int n, int[] depot, List<int[]> wasteBlocks) {
-        if (m <= 0 || n <= 0) {
-            throw new IllegalArgumentException("Grid dimensions must be greater than 0");
-        }
-        if (depot == null || depot.length != 2) {
-            throw new IllegalArgumentException("Depot location must be a valid coordinate");
-        }
-        if (wasteBlocks == null || wasteBlocks.isEmpty()) {
-            throw new IllegalArgumentException("Waste blocks list cannot be null or empty");
-        }
-        this.m = m;
-        this.n = n;
-        this.depot = depot;
-        this.wasteBlocks = wasteBlocks;
-    }
-
-    public List<int[]> planRoute() {
-        List<int[]> allNodes = new ArrayList<>(wasteBlocks);
-        allNodes.add(depot);
-
-        Map<int[], Map<int[], Integer>> shortestPaths = new HashMap<>();
-        for (int[] node : allNodes) {
-            shortestPaths.put(node, dijkstra(node, allNodes));
-        }
-
-        List<int[]> route = new ArrayList<>();
-        route.add(depot);
-
-        Set<int[]> visited = new HashSet<>();
-        visited.add(depot);
-        int[] current = depot;
-
-        while (visited.size() <= wasteBlocks.size()) {
-            int[] nextNode = null;
-            int minDistance = Integer.MAX_VALUE;
-
-            for (int[] node : wasteBlocks) {
-                if (!visited.contains(node)) {
-                    int distance = shortestPaths.get(current).get(node);
-                    if (distance < minDistance) {
-                        minDistance = distance;
-                        nextNode = node;
-                    }
-                }
-            }
-
-            route.add(nextNode);
-            visited.add(nextNode);
-            current = nextNode;
-        }
-
-        route.add(depot);
-
-        return route;
-    }
-
-    private Map<int[], Integer> dijkstra(int[] start, List<int[]> allNodes) {
-        Map<int[], Integer> distances = new HashMap<>();
-        for (int[] node : allNodes) {
-            distances.put(node, Integer.MAX_VALUE);
-        }
-        distances.put(start, 0);
-
-        PriorityQueue<int[]> pq = new PriorityQueue<>(Comparator.comparingInt(distances::get));
-        pq.add(start);
-
-        while (!pq.isEmpty()) {
-            int[] current = pq.poll();
-            int currentDistance = distances.get(current);
-
-            for (int[] neighbor : getNeighbors(current, allNodes)) {
-                int distance = currentDistance + manhattanDistance(current, neighbor);
-                if (distance < distances.get(neighbor)) {
-                    distances.put(neighbor, distance);
-                    pq.add(neighbor);
-                }
-            }
-        }
-
-        return distances;
-    }
-
-    private List<int[]> getNeighbors(int[] node, List<int[]> allNodes) {
-        List<int[]> neighbors = new ArrayList<>();
-        for (int[] potentialNeighbor : allNodes) {
-            if (!Arrays.equals(node, potentialNeighbor)) {
-                neighbors.add(potentialNeighbor);
-            }
-        }
-        return neighbors;
-    }
-
-    private int manhattanDistance(int[] a, int[] b) {
-        return Math.abs(a[0] - b[0]) + Math.abs(a[1] - b[1]);
-    }
-}

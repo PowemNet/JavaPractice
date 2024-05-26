@@ -23,159 +23,6 @@
 //}
 
 
-//TESTS
-
-//public class Main {
-//  public static void main(String[] args) {
-//    {
-//      Map<String, Map<String, String>> interactions = new HashMap<>();
-//      interactions.put("DrugA", Map.of("DrugB", "high"));
-//      interactions.put("DrugB", Map.of("DrugA", "high"));
-//
-//      DrugInteractionAlert alertSystem = new DrugInteractionAlert(interactions);
-//      List<String> administeredDrugs = Arrays.asList("DrugA", "DrugB");
-//      List<String> alerts = alertSystem.generateAlerts(administeredDrugs);
-//
-//      // TEST
-//      assert alerts.contains("DrugA interacts with DrugB (high)");
-//      //TEST END
-//
-//      // TEST
-//      assert alerts.size() == 1;
-//      //TEST END
-//    }
-//
-//    {
-//      Map<String, Map<String, String>> interactions = new HashMap<>();
-//      interactions.put("DrugA", Map.of("DrugB", "high", "DrugC", "medium"));
-//      interactions.put("DrugB", Map.of("DrugA", "high"));
-//      interactions.put("DrugC", Map.of("DrugA", "medium"));
-//
-//      DrugInteractionAlert alertSystem = new DrugInteractionAlert(interactions);
-//      List<String> administeredDrugs = Arrays.asList("DrugA", "DrugB", "DrugC");
-//      List<String> alerts = alertSystem.generateAlerts(administeredDrugs);
-//
-//      // TEST
-//      assert alerts.contains("DrugA interacts with DrugB (high)");
-//      //TEST END
-//
-//      // TEST
-//      assert alerts.contains("DrugA interacts with DrugC (medium)");
-//      //TEST END
-//
-//      // TEST
-//      assert alerts.size() == 2;
-//      //TEST END
-//    }
-//
-//    {
-//      Map<String, Map<String, String>> interactions = new HashMap<>();
-//      interactions.put("DrugA", Map.of("DrugD", "high"));
-//      interactions.put("DrugB", Map.of());
-//      interactions.put("DrugC", Map.of());
-//
-//      DrugInteractionAlert alertSystem = new DrugInteractionAlert(interactions);
-//      List<String> administeredDrugs = Arrays.asList("DrugA", "DrugB", "DrugC");
-//      List<String> alerts = alertSystem.generateAlerts(administeredDrugs);
-//
-//      // TEST
-//      assert alerts.isEmpty();
-//      //TEST END
-//
-//    }
-//
-//    {
-//      Map<String, Map<String, String>> interactions = new HashMap<>();
-//      interactions.put("DrugA", Map.of("DrugB", "high"));
-//
-//      DrugInteractionAlert alertSystem = new DrugInteractionAlert(interactions);
-//      List<String> administeredDrugs = Arrays.asList("DrugA", "DrugB", "DrugD");
-//      List<String> alerts = alertSystem.generateAlerts(administeredDrugs);
-//
-//      // TEST
-//      assert alerts.contains("DrugA interacts with DrugB (high)");
-//      //TEST END
-//
-//      // TEST
-//      assert alerts.size() == 1;
-//      //TEST END
-//    }
-//
-//    {
-//      Map<String, Map<String, String>> interactions = new HashMap<>();
-//      interactions.put("DrugA", Map.of());
-//
-//      DrugInteractionAlert alertSystem = new DrugInteractionAlert(interactions);
-//      List<String> administeredDrugs = Arrays.asList("DrugA");
-//      List<String> alerts = alertSystem.generateAlerts(administeredDrugs);
-//
-//      // TEST
-//      assert alerts.isEmpty();
-//      //TEST END
-//    }
-//
-//    {
-//      Map<String, Map<String, String>> interactions = new HashMap<>();
-//      interactions.put("DrugA", Map.of("DrugB", "high"));
-//
-//      DrugInteractionAlert alertSystem = new DrugInteractionAlert(interactions);
-//
-//      try {
-//        alertSystem.generateAlerts(null);
-//
-//        //TEST
-//        assert false : "Null administered drugs should throw IllegalArgumentException";
-//        //TEST END
-//      } catch (IllegalArgumentException e) {
-//        System.out.println("Test Passed: Null administered drugs handled correctly.");
-//      }
-//    }
-//
-//    {
-//      Map<String, Map<String, String>> interactions = new HashMap<>();
-//      interactions.put("DrugA", Map.of("DrugB", "high"));
-//
-//      DrugInteractionAlert alertSystem = new DrugInteractionAlert(interactions);
-//
-//      try {
-//        alertSystem.generateAlerts(new ArrayList<>());
-//
-//        //TEST
-//        assert false : "Empty administered drugs should throw IllegalArgumentException";
-//        //TEST END
-//
-//      } catch (IllegalArgumentException e) {
-//        System.out.println("Test Passed: Empty administered drugs handled correctly.");
-//      }
-//    }
-//
-//    {
-//      try {
-//        new DrugInteractionAlert(null);
-//
-//        //TEST
-//        assert false : "Null interactions map should throw IllegalArgumentException";
-//        //TEST END
-//      } catch (IllegalArgumentException e) {
-//        System.out.println("Test Passed: Null interactions map handled correctly.");
-//      }
-//    }
-//
-//    {
-//      try {
-//        new DrugInteractionAlert(new HashMap<>());
-//
-//        //TEST
-//        assert false : "Empty interactions map should throw IllegalArgumentException";
-//        //TEST END
-//
-//      } catch (IllegalArgumentException e) {
-//        System.out.println("Test Passed: Empty interactions map handled correctly.");
-//      }
-//    }
-//  }
-//}
-
 package com.powem.inv.algos;
 
 import java.util.ArrayList;
@@ -270,3 +117,150 @@ public class DrugInteractionAlert {
   }
 }
 
+//TESTS
+//import com.powem.inv.algos.WasteCollectionPlanner;
+//
+//import java.util.ArrayList;
+//import java.util.Arrays;
+//import java.util.HashSet;
+//import java.util.List;
+//import java.util.Set;
+//
+//public class Main {
+//  public static void main(String[] args) {
+//    int m, n;
+//    int[] depot;
+//    List<int[]> wasteBlocks;
+//    WasteCollectionPlanner planner;
+//    List<int[]> route;
+//
+//    m = 5;
+//    n = 5;
+//    depot = new int[]{0, 0};
+//    wasteBlocks = Arrays.asList(
+//            new int[]{1, 2},
+//            new int[]{3, 3},
+//            new int[]{4, 1}
+//    );
+//    planner = new WasteCollectionPlanner(m, n, depot, wasteBlocks);
+//    route = planner.planRoute();
+//
+//    // TEST
+//    assert route.size() == 5;
+//    // TEST END
+//
+//    // TEST
+//    assert Arrays.equals(route.get(0), depot);
+//    // TEST END
+//
+//    // TEST
+//    assert Arrays.equals(route.get(route.size() - 1), depot);
+//    // TEST END
+//
+//
+//    Set<int[]> visitedBlocks = new HashSet<>(wasteBlocks);
+//    for (int i = 1; i < route.size() - 1; i++) {
+//
+//      // TEST
+//      assert visitedBlocks.contains(route.get(i));
+//      // TEST END
+//    }
+//
+//    m = 10;
+//    n = 10;
+//    depot = new int[]{0, 0};
+//    wasteBlocks = Arrays.asList(
+//            new int[]{1, 2},
+//            new int[]{3, 3},
+//            new int[]{4, 1},
+//            new int[]{6, 6},
+//            new int[]{8, 8},
+//            new int[]{9, 9}
+//    );
+//    planner = new WasteCollectionPlanner(m, n, depot, wasteBlocks);
+//    route = planner.planRoute();
+//
+//    // TEST
+//    assert route.size() == 8;
+//    // TEST END
+//
+//    // TEST
+//    assert Arrays.equals(route.get(0), depot);
+//    // TEST END
+//
+//    // TEST
+//    assert Arrays.equals(route.get(route.size() - 1), depot);
+//    // TEST END
+//
+//
+//    visitedBlocks = new HashSet<>(wasteBlocks);
+//    for (int i = 1; i < route.size() - 1; i++) {
+//
+//      // TEST
+//      assert visitedBlocks.contains(route.get(i));
+//      // TEST END
+//    }
+//
+//    try {
+//      new WasteCollectionPlanner(-5, 5, new int[]{0, 0}, Arrays.asList(new int[]{1, 2}));
+//
+//      // TEST
+//      assert false;
+//      // TEST END
+//
+//    } catch (IllegalArgumentException e) {
+//      // TEST
+//      assert true;
+//      // TEST END
+//    }
+//
+//    try {
+//      new WasteCollectionPlanner(5, 5, null, Arrays.asList(new int[]{1, 2}));
+//
+//      // TEST
+//      assert false;
+//      // TEST END
+//
+//    } catch (IllegalArgumentException e) {
+//      // TEST
+//      assert true;
+//      // TEST END
+//    }
+//
+//    try {
+//      new WasteCollectionPlanner(5, 5, new int[]{0, 0}, new ArrayList<>());
+//
+//      // TEST
+//      assert false;
+//      // TEST END
+//
+//    } catch (IllegalArgumentException e) {
+//      // TEST
+//      assert true;
+//      // TEST END
+//    }
+//
+//    m = 5;
+//    n = 5;
+//    depot = new int[]{0, 0};
+//    wasteBlocks = Arrays.asList(new int[]{1, 2});
+//    planner = new WasteCollectionPlanner(m, n, depot, wasteBlocks);
+//    route = planner.planRoute();
+//
+//    // TEST
+//    assert route.size() == 3;
+//    // TEST END
+//
+//    // TEST
+//    assert Arrays.equals(route.get(0), depot);
+//    // TEST END
+//
+//    // TEST
+//    assert Arrays.equals(route.get(1), new int[]{1, 2});
+//    // TEST END
+//
+//    // TEST
+//    assert Arrays.equals(route.get(2), depot);
+//    // TEST END
+//  }
+//}
