@@ -1,10 +1,3 @@
-package com.powem.inv.algos;
-
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
 
 //        Problem: Efficient Classroom Seating Arrangement
 //        Problem Statement:
@@ -25,6 +18,14 @@ import java.util.Set;
         //public class ClassroomSeating {
         //    public List<String> arrangeSeats(Map<String, List<String>> preferences);
 //}
+
+package com.powem.inv.algos;
+
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 public class ClassRoomSeating {
     private Map<String, List<String>> preferences;
@@ -105,93 +106,79 @@ public class ClassRoomSeating {
     }
 }
 
+//TESTS
 //import com.powem.inv.algos.ClassRoomSeating;
 //
-//        import java.util.ArrayList;
-//        import java.util.Arrays;
-//        import java.util.HashMap;
-//        import java.util.List;
-//        import java.util.Map;
+//import java.util.ArrayList;
+//import java.util.Arrays;
+//import java.util.HashMap;
+//import java.util.List;
+//import java.util.Map;
 //
 //public class Main {
 //    public static void main(String[] args) {
-//        testBasicPreferences();
-//        testNoPreferences();
-//        testCircularPreferences();
-//        testUnconnectedGroups();
-//        testSingleStudent();
-//    }
+//        Map<String, List<String>> preferences1 = new HashMap<>();
+//        preferences1.put("Alice", Arrays.asList("Bob"));
+//        preferences1.put("Bob", Arrays.asList("Alice", "Charlie"));
+//        preferences1.put("Charlie", Arrays.asList("Bob"));
 //
-//    private static void testBasicPreferences() {
-//        Map<String, List<String>> preferences = new HashMap<>();
-//        preferences.put("Alice", Arrays.asList("Bob"));
-//        preferences.put("Bob", Arrays.asList("Alice", "Charlie"));
-//        preferences.put("Charlie", Arrays.asList("Bob"));
+//        ClassRoomSeating seating1 = new ClassRoomSeating(preferences1);
+//        List<String> arrangement1 = seating1.arrangeSeats();
 //
-//        ClassRoomSeating seating = new ClassRoomSeating(preferences);
-//        List<String> arrangement = seating.arrangeSeats();
+//        // TEST
+//        assert arrangement1.indexOf("Alice") == arrangement1.indexOf("Bob") - 1 || arrangement1.indexOf("Alice") == arrangement1.indexOf("Bob") + 1;
+//        // TEST END
 //
-//        //TEST
-//        assert arrangement.indexOf("Alice") == arrangement.indexOf("Bob") - 1 || arrangement.indexOf("Alice") == arrangement.indexOf("Bob") + 1;
-//        //TEST_END
+//        // TEST
+//        assert arrangement1.indexOf("Bob") == arrangement1.indexOf("Charlie") - 1 || arrangement1.indexOf("Bob") == arrangement1.indexOf("Charlie") + 1;
+//        // TEST END
 //
-//        //TEST
-//        assert arrangement.indexOf("Bob") == arrangement.indexOf("Charlie") - 1 || arrangement.indexOf("Bob") == arrangement.indexOf("Charlie") + 1;
-//        //TEST_END
-//    }
-//    private static void testNoPreferences() {
-//        Map<String, List<String>> preferences = new HashMap<>();
-//        preferences.put("Alice", new ArrayList<>());
-//        preferences.put("Bob", new ArrayList<>());
+//        Map<String, List<String>> preferences2 = new HashMap<>();
+//        preferences2.put("Alice", new ArrayList<>());
+//        preferences2.put("Bob", new ArrayList<>());
 //
-//        ClassRoomSeating seating = new ClassRoomSeating(preferences);
-//        List<String> arrangement = seating.arrangeSeats();
+//        ClassRoomSeating seating2 = new ClassRoomSeating(preferences2);
+//        List<String> arrangement2 = seating2.arrangeSeats();
 //
-//        //TEST
-//        assert arrangement.contains("Alice") && arrangement.contains("Bob");
-//        //TEST_END
-//    }
+//        // TEST
+//        assert arrangement2.contains("Alice") && arrangement2.contains("Bob");
+//        // TEST END
 //
-//    private static void testCircularPreferences() {
-//        Map<String, List<String>> preferences = new HashMap<>();
-//        preferences.put("Alice", Arrays.asList("Bob"));
-//        preferences.put("Bob", Arrays.asList("Charlie"));
-//        preferences.put("Charlie", Arrays.asList("Alice"));
+//        Map<String, List<String>> preferences3 = new HashMap<>();
+//        preferences3.put("Alice", Arrays.asList("Bob"));
+//        preferences3.put("Bob", Arrays.asList("Charlie"));
+//        preferences3.put("Charlie", Arrays.asList("Alice"));
 //
-//        ClassRoomSeating seating = new ClassRoomSeating(preferences);
-//        List<String> arrangement = seating.arrangeSeats();
+//        ClassRoomSeating seating3 = new ClassRoomSeating(preferences3);
+//        List<String> arrangement3 = seating3.arrangeSeats();
 //
-//        //TEST
-//        boolean circular = arrangement.indexOf("Alice") == arrangement.indexOf("Bob") - 1 || arrangement.indexOf("Alice") == arrangement.indexOf("Charlie") + 1;
-//        assert circular : "Circular preferences should form a closed loop.";
-//        //TEST_END
-//    }
+//        boolean circular = arrangement3.indexOf("Alice") == arrangement3.indexOf("Bob") - 1 || arrangement3.indexOf("Alice") == arrangement3.indexOf("Charlie") + 1;
+//        // TEST
+//        assert circular;
+//        // TEST END
 //
-//    private static void testUnconnectedGroups() {
-//        Map<String, List<String>> preferences = new HashMap<>();
-//        preferences.put("Alice", Arrays.asList("Bob"));
-//        preferences.put("Bob", Arrays.asList("Alice"));
-//        preferences.put("Charlie", Arrays.asList("David"));
-//        preferences.put("David", Arrays.asList("Charlie"));
+//        Map<String, List<String>> preferences4 = new HashMap<>();
+//        preferences4.put("Alice", Arrays.asList("Bob"));
+//        preferences4.put("Bob", Arrays.asList("Alice"));
+//        preferences4.put("Charlie", Arrays.asList("David"));
+//        preferences4.put("David", Arrays.asList("Charlie"));
 //
-//        ClassRoomSeating seating = new ClassRoomSeating(preferences);
-//        List<String> arrangement = seating.arrangeSeats();
+//        ClassRoomSeating seating4 = new ClassRoomSeating(preferences4);
+//        List<String> arrangement4 = seating4.arrangeSeats();
 //
-//        //TEST
-//        assert arrangement.contains("Alice") && arrangement.contains("Charlie");
-//        //TEST_END
-//    }
+//        // TEST
+//        assert arrangement4.contains("Alice") && arrangement4.contains("Charlie");
+//        // TEST END
 //
-//    private static void testSingleStudent() {
-//        Map<String, List<String>> preferences = new HashMap<>();
-//        preferences.put("Alice", new ArrayList<>());
+//        Map<String, List<String>> preferences5 = new HashMap<>();
+//        preferences5.put("Alice", new ArrayList<>());
 //
-//        ClassRoomSeating seating = new ClassRoomSeating(preferences);
-//        List<String> arrangement = seating.arrangeSeats();
+//        ClassRoomSeating seating5 = new ClassRoomSeating(preferences5);
+//        List<String> arrangement5 = seating5.arrangeSeats();
 //
-//        //TEST
-//        assert arrangement.contains("Alice");
-//        //TEST_END
+//        // TEST
+//        assert arrangement5.contains("Alice");
+//        // TEST END
 //    }
 //}
 

@@ -1,10 +1,3 @@
-package com.powem.inv.algos;
-
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Queue;
 
 //    Problem: Maximum Bandwidth Path in a Network
 //    Problem Statement:
@@ -26,10 +19,24 @@ import java.util.Queue;
 //            }
 //        }
 
+package com.powem.inv.algos;
+
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Queue;
+
 public class NetworkFlowAnalyzer {
     private int[][] capacity;
-    private List<List<Integer>> adjList; //
+    private List<List<Integer>> adjList;
+    private int nodeCount;
+
     public NetworkFlowAnalyzer(int nodeCount) {
+        if (nodeCount <= 0) {
+            throw new IllegalArgumentException("Number of nodes must be positive");
+        }
+        this.nodeCount = nodeCount;
         this.capacity = new int[nodeCount][nodeCount];
         this.adjList = new ArrayList<>(nodeCount);
         for (int i = 0; i < nodeCount; i++) {
@@ -38,12 +45,21 @@ public class NetworkFlowAnalyzer {
     }
 
     public void addEdge(int from, int to, int cap) {
+        if (from < 0 || to < 0 || from >= nodeCount || to >= nodeCount) {
+            throw new IllegalArgumentException("Invalid node index");
+        }
+        if (cap <= 0) {
+            throw new IllegalArgumentException("Capacity must be positive");
+        }
         adjList.get(from).add(to);
         adjList.get(to).add(from);
         capacity[from][to] = cap;
     }
 
     public int maxBandwidthPath(int source, int sink) {
+        if (source < 0 || sink < 0 || source >= nodeCount || sink >= nodeCount) {
+            throw new IllegalArgumentException("Invalid source or sink node index");
+        }
         int totalFlow = 0;
         while (true) {
             int[] parent = new int[capacity.length];
@@ -85,11 +101,15 @@ public class NetworkFlowAnalyzer {
     }
 }
 
+//TEST
 //import com.powem.inv.algos.NetworkFlowAnalyzer;
 //
 //public class Main {
 //    public static void main(String[] args) {
-//        NetworkFlowAnalyzer analyzer = new NetworkFlowAnalyzer(6);
+//        NetworkFlowAnalyzer analyzer;
+//        int maxBandwidth;
+//
+//        analyzer = new NetworkFlowAnalyzer(6);
 //        analyzer.addEdge(0, 1, 10);
 //        analyzer.addEdge(0, 2, 10);
 //        analyzer.addEdge(1, 3, 4);
@@ -100,11 +120,71 @@ public class NetworkFlowAnalyzer {
 //        analyzer.addEdge(4, 3, 6);
 //        analyzer.addEdge(4, 5, 10);
 //
-//        int maxBandwidth = analyzer.maxBandwidthPath(0, 5);
+//        maxBandwidth = analyzer.maxBandwidthPath(0, 5);
 //
-//        //TEST
+//        // TEST
 //        assert maxBandwidth == 19;
-//        //TEST_END
+//        // TEST END
+//
+//        analyzer = new NetworkFlowAnalyzer(4);
+//        analyzer.addEdge(0, 1, 10);
+//        analyzer.addEdge(2, 3, 10);
+//
+//        maxBandwidth = analyzer.maxBandwidthPath(0, 3);
+//
+//        // TEST
+//        assert maxBandwidth == 0;
+//        // TEST END
+//
+//        analyzer = new NetworkFlowAnalyzer(3);
+//        analyzer.addEdge(0, 1, 5);
+//        analyzer.addEdge(1, 2, 5);
+//
+//        maxBandwidth = analyzer.maxBandwidthPath(0, 2);
+//
+//        // TEST
+//        assert maxBandwidth == 5;
+//        // TEST END
+//
+//        try {
+//            analyzer = new NetworkFlowAnalyzer(3);
+//            analyzer.addEdge(0, 3, 5);
+//
+//            // TEST
+//            assert false;
+//            // TEST END
+//        } catch (IllegalArgumentException e) {
+//            // TEST
+//            assert true;
+//            // TEST END
+//        }
+//
+//        try {
+//            analyzer = new NetworkFlowAnalyzer(3);
+//            analyzer.addEdge(0, 1, -5);
+//
+//            // TEST
+//            assert false;
+//            // TEST END
+//        } catch (IllegalArgumentException e) {
+//            // TEST
+//            assert true;
+//            // TEST END
+//        }
+//
+//        try {
+//            analyzer = new NetworkFlowAnalyzer(3);
+//            analyzer.maxBandwidthPath(0, 3);
+//
+//            // TEST
+//            assert false;
+//            // TEST END
+//        } catch (IllegalArgumentException e) {
+//            // TEST
+//            assert true;
+//            // TEST END
+//        }
 //    }
 //}
+
 
