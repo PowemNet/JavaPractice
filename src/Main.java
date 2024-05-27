@@ -1,65 +1,65 @@
-import com.powem.inv.algos.LiteraryInfluenceNetwork;
-import java.util.List;
+import com.powem.inv.algos.ImageSteganography;
+import java.awt.image.BufferedImage;
 
 public class Main {
     public static void main(String[] args) {
-        LiteraryInfluenceNetwork network = new LiteraryInfluenceNetwork();
-        network.addAuthor("1", "George Orwell");
-        network.addAuthor("2", "Aldous Huxley");
+        ImageSteganography steganography = new ImageSteganography();
 
-        //TEST
-        assert network.getAuthors().containsKey("1");
-        //TEST_END
+        // TEST
+        BufferedImage image = createSampleImage(100, 100);
+        String message = "Hello, World!";
+        steganography.encodeMessage(message, image);
+        String decodedMessage = steganography.decodeMessage(image);
+        assert decodedMessage.equals(message);
+        // TEST_END
 
-        //TEST
-        assert "George Orwell".equals(network.getAuthors().get("1").getName());
-        //TEST_END
+        // TEST
+        BufferedImage image2 = createSampleImage(200, 200);
+        String longMessage = "This is a long message that will be encoded in the image.";
+        steganography.encodeMessage(longMessage, image2);
+        String decodedLongMessage = steganography.decodeMessage(image2);
+        assert decodedLongMessage.equals(longMessage);
+        // TEST_END
 
-        network.addInfluence("1", "2", 1949);
-
-        //TEST
-        assert network.getInfluenceGraph().containsKey("1") && network.getInfluenceGraph().get("1")
-            .containsKey("2");
-        //TEST_END
-
-        //TEST
-        assert network.getInfluenceGraph().get("1").get("2") == 1949;
-        //TEST_END
-
-        network.addAuthor("3", "Ray Bradbury");
-        network.addInfluence("2", "3", 1953);
-
-        //TEST
-        List<String> path = network.getInfluencePath("1", "3");
-        assert path.size() == 3 && "George Orwell".equals(path.get(0)) && "Ray Bradbury".equals(
-            path.get(2));
-        //TEST_END
-
-        //TEST
+        // TEST
         try {
-            network.addAuthor(null, "George Orwell");
+            steganography.encodeMessage(null, image);
             assert false;
         } catch (IllegalArgumentException e) {
             assert true;
         }
-        //TEST_END
+        // TEST_END
 
-        //TEST
+        // TEST
         try {
-            network.addInfluence("1", "999", 1949);
+            steganography.encodeMessage(message, null);
             assert false;
         } catch (IllegalArgumentException e) {
             assert true;
         }
-        //TEST_END
+        // TEST_END
 
-        //TEST
+        // TEST
         try {
-            network.getInfluencePath("1", "");
+            steganography.decodeMessage(null);
             assert false;
         } catch (IllegalArgumentException e) {
             assert true;
         }
-        //TEST_END
+        // TEST_END
+
+        // TEST
+        BufferedImage smallImage = createSampleImage(10, 10);
+        try {
+            steganography.encodeMessage(longMessage, smallImage);
+            assert false;
+        } catch (IllegalArgumentException e) {
+            assert true;
+        }
+        // TEST_END
+    }
+
+    private static BufferedImage createSampleImage(int width, int height) {
+        return new BufferedImage(width, height, BufferedImage.TYPE_INT_RGB);
     }
 }
