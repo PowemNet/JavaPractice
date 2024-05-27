@@ -1,27 +1,32 @@
 
-//        Problem: Efficient Classroom Seating Arrangement
-//        Problem Statement:
-//        Create an algorithm for arranging students in a classroom to maximize student satisfaction based on their
-//        seating preferences. Each student has a set of preferred neighbors, and your goal is to place them such that
-//        the number of students sitting next to at least one preferred neighbor is maximized.
+//Problem: Efficient Classroom Seating Arrangement
+//Problem Statement:
+//Create an algorithm for arranging students in a classroom to maximize student satisfaction based on their
+//seating preferences. Each student has a set of preferred neighbors, and your goal is to place them such that
+//the number of students sitting next to at least one preferred neighbor is maximized.
 //
-//        Develop a method that arranges students in a linear row of seats to maximize the number of satisfied seating
-//        preferences.
-
-//        Each student can list one or more other students they prefer to sit next to.
-//        The classroom has a single row of seats.
-
-//        Implement the ClassroomSeating class that takes a list of students and their preferences, and arranges them
-//        to maximize preference satisfaction.
+//Develop a method that arranges students in a linear row of seats to maximize the number of satisfied seating
+//preferences.
 //
-//        Function Signature:
+//Each student can list one or more other students they prefer to sit next to.
+//The classroom has a single row of seats.
+//
+//Implement the ClassroomSeating class that takes a list of students and their preferences, and arranges them
+//to maximize preference satisfaction.
+//
+//Function Signature:
 //public class ClassroomSeating {
 //    public List<String> arrangeSeats(Map<String, List<String>> preferences);
 //}
 
 package com.powem.inv.algos;
 
-import java.util.*;
+
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.ArrayList;
 
 public class ClassRoomSeating {
     private Map<String, List<String>> preferences;
