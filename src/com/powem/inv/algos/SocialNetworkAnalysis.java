@@ -39,39 +39,81 @@ public class SocialNetworkAnalysis {
     }
 }
 
-
-
-//Explanation:
-//This algorithm uses an Exponential Moving Average (EMA) to detect trends in historical
-// price data and adjust the daily trade sizes accordingly. It also deducts transaction costs
-// from the trade sizes, which affects the net amount sold each day. This approach allows for
-// dynamic adjustments based on both market trend predictions and cost considerations, making it
-// significantly more complex and realistic.
-
-
-//import com.powem.inv.algos.GeneticSequenceAlignment;
+//import com.powem.inv.algos.SocialNetworkAnalysis;
+//import java.util.HashMap;
+//import java.util.List;
+//import java.util.Map;
 //
 //public class Main {
 //    public static void main(String[] args) {
-//        GeneticSequenceAlignment alignment = new GeneticSequenceAlignment();
+//        testIdentifyTopInfluencers();
+//        testEmptyNetwork();
+//        testSingleUserNetwork();
+//        testNetworkWithIsolatedUsers();
+//    }
 //
-//        // Test matching sequences
-//        assert alignment.alignSequences("ACTG", "ACTG") == 8 : "Test Failed: Perfect match sequences did not return correct score.";
 //
-//        // Test sequences with mismatches (corrected expected score)
-//        assert alignment.alignSequences("ACTG", "ACCG") == 5 : "Test Failed: Sequences with one mismatch did not return correct score.";
+//    private static void testIdentifyTopInfluencers() {
+//        SocialNetworkAnalysis analysis = new SocialNetworkAnalysis();
+//        Map<String, List<String>> network = new HashMap<>();
+//        network.put("Alice", List.of("Bob", "Carol", "Dave"));
+//        network.put("Bob", List.of("Alice", "Eve", "Carol"));
+//        network.put("Carol", List.of("Alice", "Bob", "Dave", "Eve"));
+//        network.put("Dave", List.of("Alice", "Carol"));
+//        network.put("Eve", List.of("Bob", "Carol"));
 //
-//        // Test sequences with one gap
-//        assert alignment.alignSequences("ACTG", "ACT") == 4 : "Test Failed: Sequences with one gap did not return correct score.";
+//        List<String> influencers = analysis.identifyInfluencers(network, 3);
 //
-//        // Test sequences with multiple gaps
-//        assert alignment.alignSequences("ACTG", "A") == -4 : "Test Failed: Sequences with multiple gaps did not return correct score.";
+//        //TEST
+//        System.out.println("Top 3 Influencers: " + influencers);
+//        assert influencers.size() == 3 : "Test Failed: Should identify exactly 3 top influencers.";
+//        assert influencers.containsAll(List.of("Carol", "Alice", "Bob")) : "Test Failed: Incorrect influencers identified.";
+//        System.out.println("Test Passed: Correctly identified the top influencers.");
+//        //TEST_END
+//    }
 //
-//        // Test completely different sequences
-//        assert alignment.alignSequences("AAAA", "TTTT") == -4 : "Test Failed: Completely different sequences did not return correct score.";
+//    private static void testEmptyNetwork() {
+//        SocialNetworkAnalysis analysis = new SocialNetworkAnalysis();
+//        Map<String, List<String>> network = new HashMap<>();
 //
+//        List<String> influencers = analysis.identifyInfluencers(network, 3);
+//
+//        //TEST
+//        assert influencers.isEmpty() : "Test Failed: Empty network should result in no influencers.";
+//        System.out.println("Test Passed: No influencers identified in an empty network.");
+//        //TEST_END
+//    }
+//
+//    private static void testSingleUserNetwork() {
+//        SocialNetworkAnalysis analysis = new SocialNetworkAnalysis();
+//        Map<String, List<String>> network = new HashMap<>();
+//        network.put("Alice", List.of());
+//
+//        List<String> influencers = analysis.identifyInfluencers(network, 1);
+//
+//        //TEST
+//        assert influencers.size() == 1 && influencers.contains("Alice") : "Test Failed: Single user network should identify the user as an influencer.";
+//        System.out.println("Test Passed: Correctly identified the single user as an influencer.");
+//        //TEST_END
+//    }
+//
+//    private static void testNetworkWithIsolatedUsers() {
+//        SocialNetworkAnalysis analysis = new SocialNetworkAnalysis();
+//        Map<String, List<String>> network = new HashMap<>();
+//        network.put("Alice", List.of("Bob"));
+//        network.put("Bob", List.of("Alice"));
+//        network.put("Carol", List.of());
+//        network.put("Dave", List.of());
+//
+//        List<String> influencers = analysis.identifyInfluencers(network, 2);
+//
+//        //TEST
+//        assert influencers.size() == 2 && influencers.containsAll(List.of("Alice", "Bob")) : "Test Failed: Isolated users should not be identified as top influencers.";
+//        System.out.println("Test Passed: Correctly ignored isolated users when identifying top influencers.");
+//        //TEST_END
 //    }
 //}
+
 
 
 
