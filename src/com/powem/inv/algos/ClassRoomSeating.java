@@ -15,17 +15,13 @@
 //        to maximize preference satisfaction.
 //
 //        Function Signature:
-        //public class ClassroomSeating {
-        //    public List<String> arrangeSeats(Map<String, List<String>> preferences);
+//public class ClassroomSeating {
+//    public List<String> arrangeSeats(Map<String, List<String>> preferences);
 //}
 
 package com.powem.inv.algos;
 
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 public class ClassRoomSeating {
     private Map<String, List<String>> preferences;
@@ -33,6 +29,9 @@ public class ClassRoomSeating {
     private List<String> arrangement;
 
     public ClassRoomSeating(Map<String, List<String>> preferences) {
+        if (preferences == null || preferences.isEmpty()) {
+            throw new IllegalArgumentException("Invalid input");
+        }
         this.preferences = preferences;
         this.placedStudents = new HashSet<>();
         this.arrangement = new ArrayList<>();
@@ -108,7 +107,6 @@ public class ClassRoomSeating {
 
 //TESTS
 //import com.powem.inv.algos.ClassRoomSeating;
-//
 //import java.util.ArrayList;
 //import java.util.Arrays;
 //import java.util.HashMap;
@@ -126,23 +124,25 @@ public class ClassRoomSeating {
 //        List<String> arrangement1 = seating1.arrangeSeats();
 //
 //        // TEST
-//        assert arrangement1.indexOf("Alice") == arrangement1.indexOf("Bob") - 1 || arrangement1.indexOf("Alice") == arrangement1.indexOf("Bob") + 1;
-//        // TEST END
+//        assert arrangement1.indexOf("Alice") == arrangement1.indexOf("Bob") - 1
+//                || arrangement1.indexOf("Alice") == arrangement1.indexOf("Bob") + 1;
+//        // TEST_END
 //
 //        // TEST
-//        assert arrangement1.indexOf("Bob") == arrangement1.indexOf("Charlie") - 1 || arrangement1.indexOf("Bob") == arrangement1.indexOf("Charlie") + 1;
-//        // TEST END
+//        assert arrangement1.indexOf("Bob") == arrangement1.indexOf("Charlie") - 1
+//                || arrangement1.indexOf("Bob") == arrangement1.indexOf("Charlie") + 1;
+//        // TEST_END
 //
 //        Map<String, List<String>> preferences2 = new HashMap<>();
 //        preferences2.put("Alice", new ArrayList<>());
 //        preferences2.put("Bob", new ArrayList<>());
 //
+//        // TEST
 //        ClassRoomSeating seating2 = new ClassRoomSeating(preferences2);
 //        List<String> arrangement2 = seating2.arrangeSeats();
 //
-//        // TEST
 //        assert arrangement2.contains("Alice") && arrangement2.contains("Bob");
-//        // TEST END
+//        // TEST_END
 //
 //        Map<String, List<String>> preferences3 = new HashMap<>();
 //        preferences3.put("Alice", Arrays.asList("Bob"));
@@ -152,10 +152,11 @@ public class ClassRoomSeating {
 //        ClassRoomSeating seating3 = new ClassRoomSeating(preferences3);
 //        List<String> arrangement3 = seating3.arrangeSeats();
 //
-//        boolean circular = arrangement3.indexOf("Alice") == arrangement3.indexOf("Bob") - 1 || arrangement3.indexOf("Alice") == arrangement3.indexOf("Charlie") + 1;
 //        // TEST
+//        boolean circular = arrangement3.indexOf("Alice") == arrangement3.indexOf("Bob") - 1
+//                || arrangement3.indexOf("Alice") == arrangement3.indexOf("Charlie") + 1;
 //        assert circular;
-//        // TEST END
+//        // TEST_END
 //
 //        Map<String, List<String>> preferences4 = new HashMap<>();
 //        preferences4.put("Alice", Arrays.asList("Bob"));
@@ -168,17 +169,35 @@ public class ClassRoomSeating {
 //
 //        // TEST
 //        assert arrangement4.contains("Alice") && arrangement4.contains("Charlie");
-//        // TEST END
+//        // TEST_END
 //
 //        Map<String, List<String>> preferences5 = new HashMap<>();
 //        preferences5.put("Alice", new ArrayList<>());
 //
+//        // TEST
 //        ClassRoomSeating seating5 = new ClassRoomSeating(preferences5);
 //        List<String> arrangement5 = seating5.arrangeSeats();
 //
-//        // TEST
 //        assert arrangement5.contains("Alice");
-//        // TEST END
+//        // TEST_END
+//
+//        // TEST
+//        try {
+//            ClassRoomSeating seating6 = new ClassRoomSeating(null);
+//            assert false;
+//        } catch (IllegalArgumentException e) {
+//            assert true;
+//        }
+//        // TEST_END
+//
+//        // TEST
+//        try {
+//            ClassRoomSeating seating6 = new ClassRoomSeating(Map.of());
+//            assert false;
+//        } catch (IllegalArgumentException e) {
+//            assert true;
+//        }
+//        // TEST_END
 //    }
 //}
 
