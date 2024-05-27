@@ -6,11 +6,11 @@ package com.powem.inv.algos;
 //which is a fundamental task in bioinformatics for identifying evolutionary relationships.
 //
 //Requirements:
-
+//
 //Method Signature:
-
+//
 //public int alignSequences(String seq1, String seq2)
-
+//
 //Functionality:
 //This method returns the maximum alignment score between two DNA sequences, considering
 //match, mismatch, and gap penalties.

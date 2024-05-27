@@ -10,20 +10,20 @@ package com.powem.inv.algos;
 //
 //Requirements:
 //Class Name: LiteraryInfluenceNetwork
-
+//
 //Method Signatures:
-
+//
 //public void addAuthor(String authorId, String name)
-
+//
 //public void addInfluence(String influencerId, String influencedId, int year)
-
+//
 //public List<String> getInfluencePath(String startAuthorId, String endAuthorId)
-
+//
 //Functionality:
 //addAuthor: Adds an author to the network.
-
+//
 //addInfluence: Records an influence from one author to another, along with the year it was established.
-
+//
 //getInfluencePath: Finds and returns the shortest path of influence from one author to another, if it exists.
 
 

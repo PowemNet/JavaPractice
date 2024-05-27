@@ -9,12 +9,12 @@ package com.powem.inv.claude;
 //score based on the frequency and intensity of the words present in the text.
 //positive words: "happy", "joy", "love", "wonderful", "excellent"
 //negative words: "sad", "angry", "hate", "terrible", "awful"
-
+//
 //getTopKeywords(String text, int n): Extracts the top N most frequent keywords from the given text, excluding
 //stopwords (common words like "the", "and", "is"). Use a predefined list of stopwords and a HashMap to keep track
 //of word frequencies. Return the top N keywords as a list of strings.
 //stop words: "the", "and", "is", "a", "an", "in", "of"
-
+//
 //compareAuthors(String author1, String author2): Compares the writing styles of two authors by analyzing the
 //sentiment and keyword usage in their texts. Use the analyzeSentiment and getTopKeywords methods  and a JaccardSimilarity formula
 // to calculate the average sentiment scores and compare the top keywords for each author. Return a similarity score between

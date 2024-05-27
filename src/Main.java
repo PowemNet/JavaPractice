@@ -1,29 +1,33 @@
-import com.powem.inv.algos.ImageSteganography;
-import java.awt.image.BufferedImage;
+import com.powem.inv.algos.CellularAutomaton;
 
 public class Main {
     public static void main(String[] args) {
-        ImageSteganography steganography = new ImageSteganography();
+        CellularAutomaton automaton = new CellularAutomaton();
 
         // TEST
-        BufferedImage image = createSampleImage(100, 100);
-        String message = "Hello, World!";
-        steganography.encodeMessage(message, image);
-        String decodedMessage = steganography.decodeMessage(image);
-        assert decodedMessage.equals(message);
+        int[] initialState = {0, 1, 0, 0, 1, 0, 1, 1, 0};
+        int[][] rules = {
+            {0, 0}, {1, 1}, {0, 1}, {1, 1},
+            {0, 0}, {1, 0}, {0, 1}, {1, 0}
+        };
+        int numGenerations = 5;
+        int[][] generations = automaton.simulate(initialState, rules, numGenerations);
+        assert generations.length == numGenerations;
         // TEST_END
 
         // TEST
-        BufferedImage image2 = createSampleImage(200, 200);
-        String longMessage = "This is a long message that will be encoded in the image.";
-        steganography.encodeMessage(longMessage, image2);
-        String decodedLongMessage = steganography.decodeMessage(image2);
-        assert decodedLongMessage.equals(longMessage);
+        assert generations[0].length == initialState.length;
+        // TEST_END
+
+        // TEST
+        int[] state = {0, 1, 0, 1, 1, 0, 0, 1};
+        int aliveCellCount = automaton.getAliveCellCount(state);
+        assert aliveCellCount == 4;
         // TEST_END
 
         // TEST
         try {
-            steganography.encodeMessage(null, image);
+            automaton.simulate(null, rules, numGenerations);
             assert false;
         } catch (IllegalArgumentException e) {
             assert true;
@@ -32,7 +36,7 @@ public class Main {
 
         // TEST
         try {
-            steganography.encodeMessage(message, null);
+            automaton.simulate(initialState, new int[][]{{0}, {1}}, numGenerations);
             assert false;
         } catch (IllegalArgumentException e) {
             assert true;
@@ -41,7 +45,7 @@ public class Main {
 
         // TEST
         try {
-            steganography.decodeMessage(null);
+            automaton.simulate(initialState, rules, -1);
             assert false;
         } catch (IllegalArgumentException e) {
             assert true;
@@ -49,17 +53,12 @@ public class Main {
         // TEST_END
 
         // TEST
-        BufferedImage smallImage = createSampleImage(10, 10);
         try {
-            steganography.encodeMessage(longMessage, smallImage);
+            automaton.getAliveCellCount(null);
             assert false;
         } catch (IllegalArgumentException e) {
             assert true;
         }
         // TEST_END
-    }
-
-    private static BufferedImage createSampleImage(int width, int height) {
-        return new BufferedImage(width, height, BufferedImage.TYPE_INT_RGB);
     }
 }

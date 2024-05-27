@@ -6,24 +6,24 @@ package com.powem.inv.algos;
 //real-world complexities such as the effects of cumulative pollution on resource regeneration rates.
 //
 //Requirements:
-
+//
 //Class Name: EnvironmentalDynamicsSimulator
-
+//
 //Method Signatures:
-
+//
 //public void addActivity(String activityId, double initialPollutionLevel, double initialResourceUsage)
-
+//
 //public void simulateYear(double annualIncreasePercentage)
-
+//
 //public Map<String, EnvironmentalStats> getEnvironmentalStats()
-
+//
 //Functionality:
-
+//
 //addActivity: Adds an industrial activity with its initial pollution level and resource usage.
-
+//
 //simulateYear: Simulates the passage of one year, adjusting pollution levels and resource usage based
 //on feedback mechanisms (use a feedback factor of 0.05 for pollution).
-
+//
 //getEnvironmentalStats: Returns the current environmental statistics for each activity, including
 //adjusted pollution and resource usage levels.
 

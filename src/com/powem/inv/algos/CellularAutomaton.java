@@ -10,7 +10,7 @@ package com.powem.inv.algos;
 // the rules (where the first dimension represents the current state and its neighbors, and the second
 // dimension represents the next state), and the number of generations to simulate. The method should return a
 // 2D integer array representing the state of the cells at each generation.
-
+//
 //getAliveCellCount(int[] state): Counts the number of alive cells in a given state. The method should take an
 //integer array representing the state of the cells and return the count of alive cells.
 //Handle any potential errors, such as providing invalid initial state, rules, or number of generations,
@@ -71,7 +71,7 @@ public class CellularAutomaton {
     }
 }
 
-//TEST--
+//TESTS--
 
 //import com.powem.inv.algos.CellularAutomaton;
 //

@@ -5,7 +5,7 @@ package com.powem.inv.algos;
 //countAminoAcids(String sequence): Counts the occurrence of each amino acid in the given protein sequence.
 // The method should take a protein sequence as a string (e.g., "ACDEFGHIKLMNPQRSTVWY") and return a map
 // with amino acids as keys and their counts as values. in this case, a valid sequence starts with "ACDEFGHIKLMNPQRSTVWY".
-
+//
 //getHydrophobicityScore(String sequence): Calculates the hydrophobicity score of the given protein sequence
 // based on the Kyte-Doolittle scale. The method should take a protein sequence as a string and return the
 // average hydrophobicity score as a double.

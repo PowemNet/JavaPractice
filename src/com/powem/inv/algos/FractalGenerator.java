@@ -1,12 +1,12 @@
 package com.powem.inv.algos;
-//Chaos Game
+//Chaos Game Algorithm
 //Create a Java class called "FractalGenerator" that generates fractal patterns using the Chaos
 // Game algorithm. The class should have the following methods:
 //
 //generateSierpinskiTriangle(int numPoints): Generates a Sierpinski Triangle fractal pattern with the specified
 // number of points. The method should return a 2D array of doubles representing the x and y coordinates of the
 // points in the fractal.
-
+//
 //generateBarnsleyFern(int numPoints): Generates a Barnsley Fern fractal pattern with the specified number of
 // points. The method should return a 2D array of doubles representing the x and y coordinates of the points in
 // the fractal.
