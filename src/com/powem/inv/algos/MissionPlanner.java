@@ -16,7 +16,7 @@
 //Tasks within a mission must be completed in sequence, but tasks from different missions can be interleaved.
 //The algorithm should dynamically adjust the schedule based on resource availability and task dependencies.
 //
-
+//
 //Implement the MissionPlanner class that schedules tasks for multiple space missions, optimizes resource allocation,
 // and minimizes overall mission completion time.
 //
@@ -37,123 +37,131 @@ import java.util.Map;
 import java.util.PriorityQueue;
 
 public class MissionPlanner {
-  private final List<Mission> missions;
-  private final List<Resource> resources;
-  private final Map<String, Integer> resourceAvailability;
-  private final List<ScheduledTask> schedule;
+    private final List<Mission> missions;
+    private final List<Resource> resources;
+    private final Map<String, Integer> resourceAvailability;
+    private final List<ScheduledTask> schedule;
 
-  public MissionPlanner(List<Mission> missions, List<Resource> resources) {
-    this.missions = missions;
-    this.resources = resources;
-    this.resourceAvailability = new HashMap<>();
-    for (Resource resource : resources) {
-      resourceAvailability.put(resource.name, resource.quantity);
-    }
-    this.schedule = new ArrayList<>();
-  }
-
-  public List<ScheduledTask> generateSchedule() {
-    PriorityQueue<Task> taskQueue = new PriorityQueue<>(Comparator.comparingInt(task -> task.endTime));
-    for (Mission mission : missions) {
-      taskQueue.addAll(mission.tasks);
+    public MissionPlanner(List<Mission> missions, List<Resource> resources) {
+        this.missions = missions;
+        this.resources = resources;
+        this.resourceAvailability = new HashMap<>();
+        for (Resource resource : resources) {
+            resourceAvailability.put(resource.name, resource.quantity);
+        }
+        this.schedule = new ArrayList<>();
     }
 
-    while (!taskQueue.isEmpty()) {
-      Task currentTask = taskQueue.poll();
-      if (canAllocateResources(currentTask)) {
-        allocateResources(currentTask);
-        scheduleTask(currentTask);
-      } else {
-        taskQueue.offer(currentTask);
-      }
+    public List<ScheduledTask> generateSchedule() {
+        PriorityQueue<Task> taskQueue = new PriorityQueue<>(Comparator.comparingInt(task -> task.endTime));
+        for (Mission mission : missions) {
+            taskQueue.addAll(mission.tasks);
+        }
+
+        while (!taskQueue.isEmpty()) {
+            Task currentTask = taskQueue.poll();
+            if (canAllocateResources(currentTask)) {
+                allocateResources(currentTask);
+                scheduleTask(currentTask);
+            } else {
+                taskQueue.offer(currentTask);
+            }
+        }
+
+        return schedule;
     }
 
-    return schedule;
-  }
-
-  private boolean canAllocateResources(Task task) {
-    for (Map.Entry<String, Integer> entry : task.resourceRequirements.entrySet()) {
-      String resourceName = entry.getKey();
-      int requiredAmount = entry.getValue();
-      if (resourceAvailability.getOrDefault(resourceName, 0) < requiredAmount) {
-        return false;
-      }
+    private boolean canAllocateResources(Task task) {
+        for (Map.Entry<String, Integer> entry : task.resourceRequirements.entrySet()) {
+            String resourceName = entry.getKey();
+            int requiredAmount = entry.getValue();
+            if (resourceAvailability.getOrDefault(resourceName, 0) < requiredAmount) {
+                return false;
+            }
+        }
+        return true;
     }
-    return true;
-  }
 
-  private void allocateResources(Task task) {
-    for (Map.Entry<String, Integer> entry : task.resourceRequirements.entrySet()) {
-      String resourceName = entry.getKey();
-      int requiredAmount = entry.getValue();
-      resourceAvailability.put(resourceName, resourceAvailability.get(resourceName) - requiredAmount);
+    private void allocateResources(Task task) {
+        for (Map.Entry<String, Integer> entry : task.resourceRequirements.entrySet()) {
+            String resourceName = entry.getKey();
+            int requiredAmount = entry.getValue();
+            resourceAvailability.put(resourceName, resourceAvailability.get(resourceName) - requiredAmount);
+        }
     }
-  }
 
-  private void scheduleTask(Task task) {
-    schedule.add(new ScheduledTask(task.missionId, task.taskId, task.startTime, task.endTime, new HashMap<>(task.resourceRequirements)));
-    releaseResources(task);
-  }
-
-  private void releaseResources(Task task) {
-    for (Map.Entry<String, Integer> entry : task.resourceRequirements.entrySet()) {
-      String resourceName = entry.getKey();
-      int requiredAmount = entry.getValue();
-      resourceAvailability.put(resourceName, resourceAvailability.get(resourceName) + requiredAmount);
+    private void scheduleTask(Task task) {
+        schedule.add(
+            new ScheduledTask(task.missionId, task.taskId, task.startTime, task.endTime, new HashMap<>(task.resourceRequirements)));
+        releaseResources(task);
     }
-  }
 
-  public static class Mission {
-    String missionId;
-    List<Task> tasks;
-
-    public Mission(String missionId, List<Task> tasks) {
-      this.missionId = missionId;
-      this.tasks = tasks;
+    private void releaseResources(Task task) {
+        for (Map.Entry<String, Integer> entry : task.resourceRequirements.entrySet()) {
+            String resourceName = entry.getKey();
+            int requiredAmount = entry.getValue();
+            resourceAvailability.put(resourceName, resourceAvailability.get(resourceName) + requiredAmount);
+        }
     }
-  }
 
-  public static class Task {
-    String missionId;
-    String taskId;
-    int startTime;
-    int endTime;
-    Map<String, Integer> resourceRequirements;
+    public static class Mission {
+        String missionId;
+        List<Task> tasks;
 
-    public Task(String missionId, String taskId, int startTime, int endTime, Map<String, Integer> resourceRequirements) {
-      this.missionId = missionId;
-      this.taskId = taskId;
-      this.startTime = startTime;
-      this.endTime = endTime;
-      this.resourceRequirements = resourceRequirements;
+        public Mission(String missionId, List<Task> tasks) {
+            this.missionId = missionId;
+            this.tasks = tasks;
+        }
     }
-  }
 
-  public static class Resource {
-    public String name;
-    public int quantity;
+    public static class Task {
+        String missionId;
+        String taskId;
+        int startTime;
+        int endTime;
+        Map<String, Integer> resourceRequirements;
 
-    public Resource(String name, int quantity) {
-      this.name = name;
-      this.quantity = quantity;
+        public Task(String missionId, String taskId, int startTime, int endTime, Map<String, Integer> resourceRequirements) {
+          if(missionId == null || missionId.isEmpty() || taskId == null || taskId.isEmpty() || startTime < 0 || endTime < 0
+              || resourceRequirements == null) {
+            throw new IllegalArgumentException("Invalid input");
+          }
+            this.missionId = missionId;
+            this.taskId = taskId;
+            this.startTime = startTime;
+            this.endTime = endTime;
+            this.resourceRequirements = resourceRequirements;
+        }
     }
-  }
 
-  public static class ScheduledTask {
-    String missionId;
-    String taskId;
-    public int startTime;
-    public int endTime;
-    public Map<String, Integer> allocatedResources;
+    public static class Resource {
+        public String name;
+        public int quantity;
 
-    public ScheduledTask(String missionId, String taskId, int startTime, int endTime, Map<String, Integer> allocatedResources) {
-      this.missionId = missionId;
-      this.taskId = taskId;
-      this.startTime = startTime;
-      this.endTime = endTime;
-      this.allocatedResources = allocatedResources;
+        public Resource(String name, int quantity) {
+          if(name == null || name.isEmpty() || quantity < 0) {
+            throw new IllegalArgumentException("Invalid input");
+          }
+            this.name = name;
+            this.quantity = quantity;
+        }
     }
-  }
+
+    public static class ScheduledTask {
+        String missionId;
+        String taskId;
+        public int startTime;
+        public int endTime;
+        public Map<String, Integer> allocatedResources;
+
+        public ScheduledTask(String missionId, String taskId, int startTime, int endTime, Map<String, Integer> allocatedResources) {
+            this.missionId = missionId;
+            this.taskId = taskId;
+            this.startTime = startTime;
+            this.endTime = endTime;
+            this.allocatedResources = allocatedResources;
+        }
+    }
 }
 
 //TESTS
@@ -165,32 +173,32 @@ public class MissionPlanner {
 //
 //public class Main {
 //  public static void main(String[] args) {
+//    // TEST
 //    List<MissionPlanner.Resource> resources = Arrays.asList(
-//            new MissionPlanner.Resource("Astronaut", 5),
-//            new MissionPlanner.Resource("Equipment", 10)
+//        new MissionPlanner.Resource("Astronaut", 5),
+//        new MissionPlanner.Resource("Equipment", 10)
 //    );
 //
 //    List<MissionPlanner.Task> mission1Tasks = Arrays.asList(
-//            new MissionPlanner.Task("Mission1", "Task1", 0, 5, Map.of("Astronaut", 2, "Equipment", 3)),
-//            new MissionPlanner.Task("Mission1", "Task2", 5, 10, Map.of("Astronaut", 2, "Equipment", 2))
+//        new MissionPlanner.Task("Mission1", "Task1", 0, 5, Map.of("Astronaut", 2, "Equipment", 3)),
+//        new MissionPlanner.Task("Mission1", "Task2", 5, 10, Map.of("Astronaut", 2, "Equipment", 2))
 //    );
 //    List<MissionPlanner.Task> mission2Tasks = Arrays.asList(
-//            new MissionPlanner.Task("Mission2", "Task1", 0, 4, Map.of("Astronaut", 3, "Equipment", 4)),
-//            new MissionPlanner.Task("Mission2", "Task2", 4, 8, Map.of("Astronaut", 3, "Equipment", 3))
+//        new MissionPlanner.Task("Mission2", "Task1", 0, 4, Map.of("Astronaut", 3, "Equipment", 4)),
+//        new MissionPlanner.Task("Mission2", "Task2", 4, 8, Map.of("Astronaut", 3, "Equipment", 3))
 //    );
 //
 //    List<MissionPlanner.Mission> missions = Arrays.asList(
-//            new MissionPlanner.Mission("Mission1", mission1Tasks),
-//            new MissionPlanner.Mission("Mission2", mission2Tasks)
+//        new MissionPlanner.Mission("Mission1", mission1Tasks),
+//        new MissionPlanner.Mission("Mission2", mission2Tasks)
 //    );
 //
 //    MissionPlanner planner = new MissionPlanner(missions, resources);
 //    List<MissionPlanner.ScheduledTask> schedule = planner.generateSchedule();
-//
-//    // TEST
 //    assert schedule.size() == 4;
-//    // TEST END
+//    // TEST_END
 //
+//    //TEST
 //    boolean noOverlap = true;
 //    for (int i = 0; i < schedule.size(); i++) {
 //      for (int j = i + 1; j < schedule.size(); j++) {
@@ -198,7 +206,8 @@ public class MissionPlanner {
 //        MissionPlanner.ScheduledTask task2 = schedule.get(j);
 //        if (task1.endTime > task2.startTime && task2.endTime > task1.startTime) {
 //          for (String resource : task1.allocatedResources.keySet()) {
-//            if (task1.allocatedResources.get(resource) + task2.allocatedResources.getOrDefault(resource, 0) > resources.stream().filter(r -> r.name.equals(resource)).findFirst().get().quantity) {
+//            if (task1.allocatedResources.get(resource) + task2.allocatedResources.getOrDefault(resource, 0) > resources.stream()
+//                .filter(r -> r.name.equals(resource)).findFirst().get().quantity) {
 //              noOverlap = false;
 //              break;
 //            }
@@ -207,22 +216,96 @@ public class MissionPlanner {
 //      }
 //    }
 //
-//    //TEST
 //    assert noOverlap;
-//    // TEST END
+//    // TEST_END
 //
+//    //TEST
 //    boolean validAllocations = true;
 //    for (MissionPlanner.ScheduledTask task : schedule) {
 //      for (String resource : task.allocatedResources.keySet()) {
-//        if (task.allocatedResources.get(resource) > resources.stream().filter(r -> r.name.equals(resource)).findFirst().get().quantity) {
+//        if (task.allocatedResources.get(resource) > resources.stream().filter(r -> r.name.equals(resource)).findFirst()
+//            .get().quantity) {
 //          validAllocations = false;
 //          break;
 //        }
 //      }
 //    }
 //
-//    //TEST
 //    assert validAllocations;
-//    // TEST END
+//    // TEST_END
+//
+//    //TEST
+//    try{
+//      new MissionPlanner.Resource("", 5);
+//      assert false;
+//    } catch (IllegalArgumentException e) {
+//      assert true;
+//    }
+//    // TEST_END
+//
+//
+//    //TEST
+//    try{
+//      new MissionPlanner.Resource("test", -1);
+//      assert false;
+//    } catch (IllegalArgumentException e) {
+//      assert true;
+//    }
+//    // TEST_END
+//
+//    //TEST
+//    try{
+//      new MissionPlanner.Resource(null, -1);
+//      assert false;
+//    } catch (IllegalArgumentException e) {
+//      assert true;
+//    }
+//    // TEST_END
+//
+//    //TEST
+//    try{
+//      new MissionPlanner.Task("", "Task1", 0, 5, Map.of("Astronaut", 2, "Equipment", 3));
+//      assert false;
+//    } catch (IllegalArgumentException e) {
+//      assert true;
+//    }
+//    // TEST_END
+//
+//    //TEST
+//    try{
+//      new MissionPlanner.Task("mission", null , 0, 5, Map.of("Astronaut", 2, "Equipment", 3));
+//      assert false;
+//    } catch (IllegalArgumentException e) {
+//      assert true;
+//    }
+//    // TEST_END
+//
+//    //TEST
+//    try{
+//      new MissionPlanner.Task("mission", null , -1, 5, Map.of("Astronaut", 2, "Equipment", 3));
+//      assert false;
+//    } catch (IllegalArgumentException e) {
+//      assert true;
+//    }
+//    // TEST_END
+//
+//    //TEST
+//    try{
+//      new MissionPlanner.Task("mission", "task1" , 0, -5, Map.of("Astronaut", 2, "Equipment", 3));
+//      assert false;
+//    } catch (IllegalArgumentException e) {
+//      assert true;
+//    }
+//    // TEST_END
+//
+//    //TEST
+//    try{
+//      new MissionPlanner.Task("mission", "task1" , 0, 5, null);
+//      assert false;
+//    } catch (IllegalArgumentException e) {
+//      assert true;
+//    }
+//    // TEST_END
+//
 //  }
 //}
