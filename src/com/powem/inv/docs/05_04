@@ -1,5 +1,7 @@
 1-
 
+
+
 ------------------------------------------------------------------------------------------------------------------------
 2-
 
@@ -1087,10 +1089,259 @@ public class Main {
 
 22 - Rework from last week - brand new submission
 
+Create an algorithm to optimize network traffic routing in a telecommunications network.
+ Each node in the network represents a switch or router, and each edge represents a communication link with a certain
+ capacity (maximum traffic it can handle).
+
+Develop a system that optimizes the flow of data packets across the network to minimize the total transmission time
+ while avoiding overloading any single link.
+
+Nodes in the network can generate or receive data packets.
+Each link between nodes has a capacity limit.
+Data packets have a size and a destination, and they can be routed through multiple paths.
+
+Implement the NetworkTrafficOptimizer class that takes a graph representing the network, analyzes possible paths, and
+ distributes traffic in a way that maximizes efficiency and minimizes transmission delays.
+
+Function Signature:
+
+public class NetworkTrafficOptimizer {
+
+  public void addNode(String nodeId);
+
+  public void addLink(String nodeId1, String nodeId2, int capacity);
+
+  public void routePacket(String source, String destination, int packetSize);
+
+  public Map<String, Integer> getCurrentLoadOnLinks();
+}
+
+
+import java.util.HashMap;
+import java.util.Map;
+
+public class NetworkTrafficOptimizer {
+  private Map<String, Map<String, Integer>> graph;
+  private Map<String, Integer> capacity;
+  private Map<String, Integer> linkLoad;
+
+  public NetworkTrafficOptimizer() {
+    this.graph = new HashMap<>();
+    this.capacity = new HashMap<>();
+    this.linkLoad = new HashMap<>();
+  }
+
+  public void addNode(String nodeId) {
+    if (nodeId == null || nodeId.isEmpty()) {
+      throw new IllegalArgumentException("Invalid input");
+    }
+    graph.putIfAbsent(nodeId, new HashMap<>());
+  }
+
+  public void addLink(String nodeId1, String nodeId2, int capacity) {
+    if (nodeId1 == null || nodeId1.isEmpty() || nodeId2 == null || nodeId2.isEmpty() || capacity <= 0) {
+      throw new IllegalArgumentException("Invalid input");
+    }
+    graph.get(nodeId1).put(nodeId2, capacity);
+    graph.get(nodeId2).put(nodeId1, capacity);
+    String link1 = nodeId1 + "->" + nodeId2;
+    String link2 = nodeId2 + "->" + nodeId1;
+    this.capacity.put(link1, capacity);
+    this.capacity.put(link2, capacity);
+    linkLoad.put(link1, 0);
+    linkLoad.put(link2, 0);
+  }
+
+  public void routePacket(String source, String destination, int packetSize) {
+    if (source == null || source.isEmpty() || destination == null || destination.isEmpty() || packetSize <= 0) {
+      throw new IllegalArgumentException("Invalid input");
+    }
+    String directLink = source + "->" + destination;
+    if (linkLoad.get(directLink) + packetSize > capacity.get(directLink) * 0.8) {
+      String alternatePath1 = source + "->B";
+      String alternatePath2 = "B->" + destination;
+
+      if (linkLoad.get(alternatePath1) + packetSize <= capacity.get(alternatePath1) &&
+          linkLoad.get(alternatePath2) + packetSize <= capacity.get(alternatePath2)) {
+        linkLoad.put(alternatePath1, linkLoad.get(alternatePath1) + packetSize);
+        linkLoad.put(alternatePath2, linkLoad.get(alternatePath2) + packetSize);
+      } else {
+        if (linkLoad.get(directLink) + packetSize <= capacity.get(directLink)) {
+          linkLoad.put(directLink, linkLoad.get(directLink) + packetSize);
+        }
+      }
+    } else {
+      linkLoad.put(directLink, linkLoad.get(directLink) + packetSize);
+    }
+  }
+
+  public Map<String, Integer> getCurrentLoadOnLinks() {
+    return new HashMap<>(linkLoad);
+  }
+}
+
+
+---- TESTS ----
+import java.util.Map;
+
+public class Main {
+  public static void main(String[] args) {
+    testBasicConnectivity();
+    testCapacityLimits();
+    testShortestPathRouting();
+  }
+
+  private static void testBasicConnectivity() {
+    NetworkTrafficOptimizer optimizer = new NetworkTrafficOptimizer();
+    optimizer.addNode("A");
+    optimizer.addNode("B");
+    optimizer.addLink("A", "B", 100);
+
+    optimizer.routePacket("A", "B", 50);
+
+    //TEST
+    Map<String, Integer> load = optimizer.getCurrentLoadOnLinks();
+    assert load.get("A->B") == 50;
+    //TEST_END
+
+    //TEST
+    try {
+      optimizer.addNode("");
+      assert false;
+    } catch (IllegalArgumentException e) {
+      assert true;
+    }
+    //TEST_END
+
+    //TEST
+    try {
+      optimizer.addNode(null);
+      assert false;
+    } catch (IllegalArgumentException e) {
+      assert true;
+    }
+    //TEST_END
+
+    //TEST
+    try {
+      optimizer.addLink("", "B", 100);
+      assert false;
+    } catch (IllegalArgumentException e) {
+      assert true;
+    }
+    //TEST_END
+
+    //TEST
+    try {
+      optimizer.addLink("A", null, 100);
+      assert false;
+    } catch (IllegalArgumentException e) {
+      assert true;
+    }
+    //TEST_END
+
+    //TEST
+    try {
+      optimizer.addLink("A", "B", -4);
+      assert false;
+    } catch (IllegalArgumentException e) {
+      assert true;
+    }
+    //TEST_END
+
+    //TEST
+    try {
+      optimizer.routePacket("", "B", 100);
+      assert false;
+    } catch (IllegalArgumentException e) {
+      assert true;
+    }
+    //TEST_END
+
+    //TEST
+    try {
+      optimizer.routePacket("A", null, 100);
+      assert false;
+    } catch (IllegalArgumentException e) {
+      assert true;
+    }
+    //TEST_END
+
+    //TEST
+    try {
+      optimizer.routePacket("A", "B", -4);
+      assert false;
+    } catch (IllegalArgumentException e) {
+      assert true;
+    }
+    //TEST_END
+  }
+
+  private static void testCapacityLimits() {
+    NetworkTrafficOptimizer optimizer = new NetworkTrafficOptimizer();
+    optimizer.addNode("A");
+    optimizer.addNode("B");
+    optimizer.addLink("A", "B", 50);
+
+    optimizer.routePacket("A", "B", 30);
+    optimizer.routePacket("A", "B", 30);
+
+    //TEST
+    Map<String, Integer> load = optimizer.getCurrentLoadOnLinks();
+    assert load.get("A->B") <= 50;
+    //TEST_END
+  }
+
+  private static void testShortestPathRouting() {
+    NetworkTrafficOptimizer optimizer = new NetworkTrafficOptimizer();
+    optimizer.addNode("A");
+    optimizer.addNode("B");
+    optimizer.addNode("C");
+    optimizer.addLink("A", "B", 100);
+    optimizer.addLink("B", "C", 100);
+    optimizer.addLink("A", "C", 50);
+
+    optimizer.routePacket("A", "C", 25);
+
+    //TEST
+    Map<String, Integer> load = optimizer.getCurrentLoadOnLinks();
+    assert load.get("A->C") == 25;
+    //TEST_END
+  }
+}
+
 
 ------------------------------------------------------------------------------------------------------------------------
 
 23 - Rework from last week - brand new submission
+
+Design a Java class to simulate the dynamic behavior of gene expression pathways in a biological system. In this simulation,
+ each gene or protein acts as a node, and the interactions (like activation or inhibition) between them are edges with varying
+ intensities based on external conditions like temperature or chemical presence.
+
+**Requirements**
+Class Name: GeneExpressionSimulator
+
+**Method Signatures**
+
+public void addGene(String geneId)
+
+public void connectGenes(String geneId1, String geneId2, double baseInteractionStrength)
+
+public void updateConditions(String geneId1, String geneId2, double currentConditionFactor)
+
+public List<String> findOptimalSignalPath(String sourceGene, String targetGene)
+
+**Functionality**
+
+addGene: Registers a new gene in the system.
+
+connectGenes: Establishes a biochemical interaction between two genes with a specified base interaction strength.
+
+updateConditions: Modifies the interaction strength based on external biological conditions.
+
+findOptimalSignalPath: Determines the most effective pathway for a signal to travel from the source gene to the target gene,
+considering the current interaction strengths.
 
 
 
@@ -1098,6 +1349,141 @@ public class Main {
 
 24 - Rework from last week - brand new submission
 
+**Problem**
+Create a Java class to detect anomalies in historical climate data, focusing on temperature
+fluctuations that significantly deviate from historical averages. This system will help
+researchers identify unusual temperature events that could indicate significant climatic changes.
+
+**Requirements**
+Class Name: ClimateAnomalyDetector
+
+**Method Signatures**:
+
+public void addTemperatureRecord(String date, double temperature)
+
+public List<String> detectAnomalies(double threshold)
+
+**Functionality**:
+addTemperatureRecord: Records the temperature for a given date.
+
+detectAnomalies: Returns a list of dates where the temperature was outside the normal
+range by more than the specified threshold percentage compared to the historical average.
+
+
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+public class ClimateAnomalyDetector {
+    private Map<String, Double> temperatureRecords;
+    private double averageTemperature;
+
+    public ClimateAnomalyDetector() {
+        this.temperatureRecords = new HashMap<>();
+        this.averageTemperature = 0.0;
+    }
+
+    public double getAverageTemperature(){
+        return this.averageTemperature;
+    }
+
+    public void addTemperatureRecord(String date, double temperature) {
+        if (date == null || date.isEmpty()) {
+            throw new IllegalArgumentException("Date cannot be null or empty");
+        }
+        if (Double.isNaN(temperature) || Double.isInfinite(temperature)) {
+            throw new IllegalArgumentException("Temperature must be a valid number");
+        }
+        temperatureRecords.put(date, temperature);
+        updateAverageTemperature(temperature);
+    }
+
+    private void updateAverageTemperature(double newTemp) {
+        averageTemperature = temperatureRecords.values().stream()
+            .mapToDouble(Double::doubleValue)
+            .average()
+            .orElse(Double.NaN);
+    }
+
+    public List<String> detectAnomalies(double threshold) {
+        if (threshold < 0) {
+            throw new IllegalArgumentException("Threshold must be non-negative");
+        }
+        List<String> anomalies = new ArrayList<>();
+        double lowerBound = averageTemperature * (1 - threshold);
+        double upperBound = averageTemperature * (1 + threshold);
+
+        for (Map.Entry<String, Double> entry : temperatureRecords.entrySet()) {
+            double temp = entry.getValue();
+            if (temp < lowerBound || temp > upperBound) {
+                anomalies.add(entry.getKey());
+            }
+        }
+        return anomalies;
+    }
+}
+
+--TESTS ---
+import java.util.List;
+
+public class Main {
+    public static void main(String[] args) {
+        ClimateAnomalyDetector detector = new ClimateAnomalyDetector();
+        detector.addTemperatureRecord("2021-01-01", 20.0);
+        detector.addTemperatureRecord("2021-01-02", 22.0);
+        detector.addTemperatureRecord("2021-01-03", 18.0);
+
+        //TEST
+        double expectedAverage = (20.0 + 22.0 + 18.0) / 3;
+        assert Math.abs(detector.getAverageTemperature() - expectedAverage) < 0.01;
+        //TEST_END
+
+        detector.addTemperatureRecord("2021-01-04", 30.0);
+        //TEST
+        List<String> anomalies = detector.detectAnomalies(0.20);
+        assert anomalies.contains("2021-01-04");
+        assert anomalies.size() == 1;
+        //TEST_END
+
+
+        //TEST
+        try {
+            detector.addTemperatureRecord(null, 20.0);
+            assert false;
+        } catch (IllegalArgumentException e) {
+            assert true;
+        }
+        //TEST_END
+
+        //TEST
+        try {
+            detector.addTemperatureRecord("", 20.0);
+            assert false;
+        } catch (IllegalArgumentException e) {
+            assert true;
+        }
+        //TEST_END
+
+        //TEST
+        try {
+            detector.addTemperatureRecord("2021-01-05", Double.NaN);
+            assert false;
+        } catch (IllegalArgumentException e) {
+            assert true;
+        }
+        //TEST_END
+
+        //TEST
+        try {
+            detector.detectAnomalies(-0.1);
+            assert false;
+        } catch (IllegalArgumentException e) {
+            assert true;
+        }
+        //TEST_END
+    }
+}
 
 
 ------------------------------------------------------------------------------------------------------------------------
