@@ -1,92 +1,87 @@
-import com.powem.inv.algos.ResourceDistributor;
+import com.powem.inv.algos.AirTrafficControlSystem;
+import java.util.List;
 
 public class Main {
   public static void main(String[] args) {
-    ResourceDistributor distributor = new ResourceDistributor();
+    AirTrafficControlSystem system = new AirTrafficControlSystem();
 
-    //TEST
-    distributor.addNode(1, 100, 80);
-    distributor.addNode(2, 30, 50);
-    distributor.addEdge(1, 2);
-    distributor.distributeResources();
+    // TEST
+    system.addAircraft("A1", 40.7128, -74.0060, 10000.0, 550.0, "Los Angeles");
+    system.addAircraft("A2", 34.0522, -118.2437, 12000.0, 600.0, "New York");
+    system.manageFlightSchedules();
+    List<String> flightStatus = system.getFlightStatus();
+    assert flightStatus.size() == 2;
+    assert flightStatus.get(0).contains("A1");
+    assert flightStatus.get(1).contains("A2");
+    // TEST_END
 
-    assert distributor.getNodeResourceLevels().get(1) >= 80;
-    //TEST_END
+    // TEST
+    system.updateAircraftPosition("A1", 41.0, -75.0, 10500.0);
+    system.manageFlightSchedules();
+    flightStatus = system.getFlightStatus();
+    assert flightStatus.get(0).contains("(41.0, -75.0, 10500.0)");
+    // TEST_END
 
-    //TEST
+    // TEST
     try {
-      distributor.addEdge(1, -2);
+      system.addAircraft("", 40.7128, -74.0060, 10000.0, 550.0, "Los Angeles");
       assert false;
     } catch (IllegalArgumentException e) {
       assert true;
     }
-    //TEST_END
+    // TEST_END
 
-    //TEST
+    // TEST
     try {
-      distributor.addEdge(1, 0);
+      system.updateAircraftPosition("A1", 91.0, -75.0, 10500.0);
       assert false;
     } catch (IllegalArgumentException e) {
       assert true;
     }
-    //TEST_END
+    // TEST_END
 
-    //TEST
-    assert distributor.getNodeResourceLevels().get(2) >= 50;
-    //TEST_END
-
-    //TEST
-    distributor.addNode(3, 60, 60);
-    distributor.addEdge(2, 3);
-    distributor.distributeResources();
-    assert distributor.getNodeResourceLevels().get(3) == 60;
-    //TEST_END
-
-    //TEST
-    distributor.addNode(4, 40, 30);
-    distributor.addNode(5, 50, 50);
-    distributor.addEdge(4, 5);
-    distributor.distributeResources();
-
-    assert distributor.getNodeResourceLevels().get(4) >= 30;
-    //TEST_END
-
-    //TEST
-    assert distributor.getNodeResourceLevels().get(5) == 50;
-    //TEST_END
-
-    //TEST
+    // TEST
     try {
-      distributor.addNode(6, -10, 20);
+      system.updateAircraftPosition("A3", 40.0, -70.0, 9000.0);
       assert false;
     } catch (IllegalArgumentException e) {
       assert true;
     }
-    //TEST_END
+    // TEST_END
 
-    //TEST
-    try {
-      distributor.addNode(0, 10, 20);
-      assert false;
-    } catch (IllegalArgumentException e) {
-      assert true;
-    }
-    //TEST_END
+    // TEST
+    system.addAircraft("A3", 51.5074, -0.1278, 9000.0, 500.0, "Chicago");
+    system.addAircraft("A4", 35.6895, 139.6917, 11000.0, 650.0, "San Francisco");
+    system.manageFlightSchedules();
+    flightStatus = system.getFlightStatus();
+    assert flightStatus.size() == 4;
+    // TEST_END
 
-    //TEST
-    try {
-      distributor.addNode(1, 1, 0);
-      assert false;
-    } catch (IllegalArgumentException e) {
-      assert true;
-    }
-    //TEST_END
+    // TEST
+    AirTrafficControlSystem emptySystem = new AirTrafficControlSystem();
+    emptySystem.manageFlightSchedules();
+    List<String> emptyFlightStatus = emptySystem.getFlightStatus();
+    assert emptyFlightStatus.isEmpty();
+    // TEST_END
 
-    //TEST: Check distribution after adding edges between multiple nodes
-    distributor.addNode(7, 25, 25);
-    distributor.addEdge(5, 7);
-    distributor.distributeResources();
-    assert distributor.getNodeResourceLevels().get(7) == 25;
-    //TEST_END
+    // TEST
+    system.updateAircraftPosition("A1", 42.0, -76.0, 11000.0);
+    system.manageFlightSchedules();
+    flightStatus = system.getFlightStatus();
+    assert flightStatus.get(0).contains("(42.0, -76.0, 11000.0)");
+    // TEST_END
+
+    // TEST
+    system.addAircraft("A5", 37.7749, -122.4194, 11500.0, 700.0, "Miami");
+    system.manageFlightSchedules();
+    flightStatus = system.getFlightStatus();
+    assert flightStatus.size() == 5;
+
+    system.updateAircraftPosition("A5", 38.0, -123.0, 11500.0);
+    system.manageFlightSchedules();
+    flightStatus = system.getFlightStatus();
+    assert flightStatus.get(4).contains("A5");
+    assert flightStatus.get(4).contains("(38.0, -123.0, 11500.0)");
+    // TEST_END
   }
 }
