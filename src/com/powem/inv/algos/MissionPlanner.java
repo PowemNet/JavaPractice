@@ -38,13 +38,14 @@ import java.util.PriorityQueue;
 
 public class MissionPlanner {
     private final List<Mission> missions;
-    private final List<Resource> resources;
     private final Map<String, Integer> resourceAvailability;
     private final List<ScheduledTask> schedule;
 
     public MissionPlanner(List<Mission> missions, List<Resource> resources) {
+        if (missions == null || missions.isEmpty() || resources == null || resources.isEmpty()) {
+            throw new IllegalArgumentException("invalid input");
+        }
         this.missions = missions;
-        this.resources = resources;
         this.resourceAvailability = new HashMap<>();
         for (Resource resource : resources) {
             resourceAvailability.put(resource.name, resource.quantity);
@@ -109,6 +110,9 @@ public class MissionPlanner {
         List<Task> tasks;
 
         public Mission(String missionId, List<Task> tasks) {
+            if (missionId == null || missionId.isEmpty() || tasks == null || tasks.isEmpty()) {
+                throw new IllegalArgumentException("invalid input");
+            }
             this.missionId = missionId;
             this.tasks = tasks;
         }
@@ -122,10 +126,10 @@ public class MissionPlanner {
         Map<String, Integer> resourceRequirements;
 
         public Task(String missionId, String taskId, int startTime, int endTime, Map<String, Integer> resourceRequirements) {
-          if(missionId == null || missionId.isEmpty() || taskId == null || taskId.isEmpty() || startTime < 0 || endTime < 0
-              || resourceRequirements == null) {
-            throw new IllegalArgumentException("Invalid input");
-          }
+            if (missionId == null || missionId.isEmpty() || taskId == null || taskId.isEmpty() || startTime < 0 || endTime < 0
+                || resourceRequirements == null) {
+                throw new IllegalArgumentException("Invalid input");
+            }
             this.missionId = missionId;
             this.taskId = taskId;
             this.startTime = startTime;
@@ -139,9 +143,9 @@ public class MissionPlanner {
         public int quantity;
 
         public Resource(String name, int quantity) {
-          if(name == null || name.isEmpty() || quantity < 0) {
-            throw new IllegalArgumentException("Invalid input");
-          }
+            if (name == null || name.isEmpty() || quantity < 0) {
+                throw new IllegalArgumentException("Invalid input");
+            }
             this.name = name;
             this.quantity = quantity;
         }
@@ -155,6 +159,10 @@ public class MissionPlanner {
         public Map<String, Integer> allocatedResources;
 
         public ScheduledTask(String missionId, String taskId, int startTime, int endTime, Map<String, Integer> allocatedResources) {
+            if (missionId == null || missionId.isEmpty() || taskId == null || taskId.isEmpty() || startTime < 0 || endTime < 0
+                || allocatedResources == null || allocatedResources.isEmpty()) {
+                throw new IllegalArgumentException("invalid input");
+            }
             this.missionId = missionId;
             this.taskId = taskId;
             this.startTime = startTime;
@@ -172,140 +180,230 @@ public class MissionPlanner {
 //import java.util.Map;
 //
 //public class Main {
-//  public static void main(String[] args) {
-//    // TEST
-//    List<MissionPlanner.Resource> resources = Arrays.asList(
-//        new MissionPlanner.Resource("Astronaut", 5),
-//        new MissionPlanner.Resource("Equipment", 10)
-//    );
+//    public static void main(String[] args) {
+//        // TEST
+//        List<MissionPlanner.Resource> resources = Arrays.asList(
+//            new MissionPlanner.Resource("Astronaut", 5),
+//            new MissionPlanner.Resource("Equipment", 10)
+//        );
 //
-//    List<MissionPlanner.Task> mission1Tasks = Arrays.asList(
-//        new MissionPlanner.Task("Mission1", "Task1", 0, 5, Map.of("Astronaut", 2, "Equipment", 3)),
-//        new MissionPlanner.Task("Mission1", "Task2", 5, 10, Map.of("Astronaut", 2, "Equipment", 2))
-//    );
-//    List<MissionPlanner.Task> mission2Tasks = Arrays.asList(
-//        new MissionPlanner.Task("Mission2", "Task1", 0, 4, Map.of("Astronaut", 3, "Equipment", 4)),
-//        new MissionPlanner.Task("Mission2", "Task2", 4, 8, Map.of("Astronaut", 3, "Equipment", 3))
-//    );
+//        List<MissionPlanner.Task> mission1Tasks = Arrays.asList(
+//            new MissionPlanner.Task("Mission1", "Task1", 0, 5, Map.of("Astronaut", 2, "Equipment", 3)),
+//            new MissionPlanner.Task("Mission1", "Task2", 5, 10, Map.of("Astronaut", 2, "Equipment", 2))
+//        );
+//        List<MissionPlanner.Task> mission2Tasks = Arrays.asList(
+//            new MissionPlanner.Task("Mission2", "Task1", 0, 4, Map.of("Astronaut", 3, "Equipment", 4)),
+//            new MissionPlanner.Task("Mission2", "Task2", 4, 8, Map.of("Astronaut", 3, "Equipment", 3))
+//        );
 //
-//    List<MissionPlanner.Mission> missions = Arrays.asList(
-//        new MissionPlanner.Mission("Mission1", mission1Tasks),
-//        new MissionPlanner.Mission("Mission2", mission2Tasks)
-//    );
+//        List<MissionPlanner.Mission> missions = Arrays.asList(
+//            new MissionPlanner.Mission("Mission1", mission1Tasks),
+//            new MissionPlanner.Mission("Mission2", mission2Tasks)
+//        );
 //
-//    MissionPlanner planner = new MissionPlanner(missions, resources);
-//    List<MissionPlanner.ScheduledTask> schedule = planner.generateSchedule();
-//    assert schedule.size() == 4;
-//    // TEST_END
+//        MissionPlanner planner = new MissionPlanner(missions, resources);
+//        List<MissionPlanner.ScheduledTask> schedule = planner.generateSchedule();
+//        assert schedule.size() == 4;
 //
-//    //TEST
-//    boolean noOverlap = true;
-//    for (int i = 0; i < schedule.size(); i++) {
-//      for (int j = i + 1; j < schedule.size(); j++) {
-//        MissionPlanner.ScheduledTask task1 = schedule.get(i);
-//        MissionPlanner.ScheduledTask task2 = schedule.get(j);
-//        if (task1.endTime > task2.startTime && task2.endTime > task1.startTime) {
-//          for (String resource : task1.allocatedResources.keySet()) {
-//            if (task1.allocatedResources.get(resource) + task2.allocatedResources.getOrDefault(resource, 0) > resources.stream()
-//                .filter(r -> r.name.equals(resource)).findFirst().get().quantity) {
-//              noOverlap = false;
-//              break;
+//        // TEST
+//        try {
+//            new MissionPlanner(null, resources);
+//            assert false;
+//        } catch (IllegalArgumentException e) {
+//            assert true;
+//        }
+//        //TEST_END
+//
+//        // TEST
+//        try {
+//            new MissionPlanner(List.of(), resources);
+//            assert false;
+//        } catch (IllegalArgumentException e) {
+//            assert true;
+//        }
+//        // TEST_END
+//
+//
+//        //TEST
+//        try {
+//            new MissionPlanner(missions, null);
+//            assert false;
+//        } catch (IllegalArgumentException e) {
+//            assert true;
+//        }
+//        //TEST_END
+//
+//        // TEST
+//        try {
+//            new MissionPlanner(missions, List.of());
+//            assert false;
+//        } catch (IllegalArgumentException e) {
+//            assert true;
+//        }
+//        //TEST_END
+//
+//        //TEST
+//        try {
+//            new MissionPlanner.Mission(null, null);
+//            assert false;
+//        } catch (IllegalArgumentException e) {
+//            assert true;
+//        }
+//        //TEST_END
+//
+//        //TEST
+//        try {
+//            new MissionPlanner.Mission(null, List.of());
+//            assert false;
+//        } catch (IllegalArgumentException e) {
+//            assert true;
+//        }
+//        //TEST_END
+//
+//        //TEST
+//        try {
+//            new MissionPlanner.ScheduledTask(null, "", 1, 2, Map.of());
+//            assert false;
+//        } catch (IllegalArgumentException e) {
+//            assert true;
+//        }
+//        //TEST_END
+//
+//        //TEST
+//        try {
+//            new MissionPlanner.ScheduledTask("testMissions", "", 1, 2, Map.of());
+//            assert false;
+//        } catch (IllegalArgumentException e) {
+//            assert true;
+//        }
+//        //TEST_END
+//
+//        //TEST
+//        try {
+//            new MissionPlanner.ScheduledTask("testMissions", "test", 1, 2, null);
+//            assert false;
+//        } catch (IllegalArgumentException e) {
+//            assert true;
+//        }
+//        //TEST_END
+//
+//        //TEST
+//        try {
+//            new MissionPlanner.ScheduledTask("testMissions", "test", -1, 2, Map.of());
+//            assert false;
+//        } catch (IllegalArgumentException e) {
+//            assert true;
+//        }
+//        //TEST_END
+//
+//        //TEST
+//        boolean noOverlap = true;
+//        for (int i = 0; i < schedule.size(); i++) {
+//            for (int j = i + 1; j < schedule.size(); j++) {
+//                MissionPlanner.ScheduledTask task1 = schedule.get(i);
+//                MissionPlanner.ScheduledTask task2 = schedule.get(j);
+//                if (task1.endTime > task2.startTime && task2.endTime > task1.startTime) {
+//                    for (String resource : task1.allocatedResources.keySet()) {
+//                        if (task1.allocatedResources.get(resource) + task2.allocatedResources.getOrDefault(resource, 0) > resources.stream()
+//                            .filter(r -> r.name.equals(resource)).findFirst().get().quantity) {
+//                            noOverlap = false;
+//                            break;
+//                        }
+//                    }
+//                }
 //            }
-//          }
 //        }
-//      }
-//    }
 //
-//    assert noOverlap;
-//    // TEST_END
+//        assert noOverlap;
+//        // TEST_END
 //
-//    //TEST
-//    boolean validAllocations = true;
-//    for (MissionPlanner.ScheduledTask task : schedule) {
-//      for (String resource : task.allocatedResources.keySet()) {
-//        if (task.allocatedResources.get(resource) > resources.stream().filter(r -> r.name.equals(resource)).findFirst()
-//            .get().quantity) {
-//          validAllocations = false;
-//          break;
+//        //TEST
+//        boolean validAllocations = true;
+//        for (MissionPlanner.ScheduledTask task : schedule) {
+//            for (String resource : task.allocatedResources.keySet()) {
+//                if (task.allocatedResources.get(resource) > resources.stream().filter(r -> r.name.equals(resource)).findFirst()
+//                    .get().quantity) {
+//                    validAllocations = false;
+//                    break;
+//                }
+//            }
 //        }
-//      }
+//
+//        assert validAllocations;
+//        // TEST_END
+//
+//        //TEST
+//        try {
+//            new MissionPlanner.Resource("", 5);
+//            assert false;
+//        } catch (IllegalArgumentException e) {
+//            assert true;
+//        }
+//        // TEST_END
+//
+//
+//        //TEST
+//        try {
+//            new MissionPlanner.Resource("test", -1);
+//            assert false;
+//        } catch (IllegalArgumentException e) {
+//            assert true;
+//        }
+//        // TEST_END
+//
+//        //TEST
+//        try {
+//            new MissionPlanner.Resource(null, -1);
+//            assert false;
+//        } catch (IllegalArgumentException e) {
+//            assert true;
+//        }
+//        // TEST_END
+//
+//        //TEST
+//        try {
+//            new MissionPlanner.Task("", "Task1", 0, 5, Map.of("Astronaut", 2, "Equipment", 3));
+//            assert false;
+//        } catch (IllegalArgumentException e) {
+//            assert true;
+//        }
+//        // TEST_END
+//
+//        //TEST
+//        try {
+//            new MissionPlanner.Task("mission", null, 0, 5, Map.of("Astronaut", 2, "Equipment", 3));
+//            assert false;
+//        } catch (IllegalArgumentException e) {
+//            assert true;
+//        }
+//        // TEST_END
+//
+//        //TEST
+//        try {
+//            new MissionPlanner.Task("mission", null, -1, 5, Map.of("Astronaut", 2, "Equipment", 3));
+//            assert false;
+//        } catch (IllegalArgumentException e) {
+//            assert true;
+//        }
+//        // TEST_END
+//
+//        //TEST
+//        try {
+//            new MissionPlanner.Task("mission", "task1", 0, -5, Map.of("Astronaut", 2, "Equipment", 3));
+//            assert false;
+//        } catch (IllegalArgumentException e) {
+//            assert true;
+//        }
+//        // TEST_END
+//
+//        //TEST
+//        try {
+//            new MissionPlanner.Task("mission", "task1", 0, 5, null);
+//            assert false;
+//        } catch (IllegalArgumentException e) {
+//            assert true;
+//        }
+//        // TEST_END
+//
 //    }
-//
-//    assert validAllocations;
-//    // TEST_END
-//
-//    //TEST
-//    try{
-//      new MissionPlanner.Resource("", 5);
-//      assert false;
-//    } catch (IllegalArgumentException e) {
-//      assert true;
-//    }
-//    // TEST_END
-//
-//
-//    //TEST
-//    try{
-//      new MissionPlanner.Resource("test", -1);
-//      assert false;
-//    } catch (IllegalArgumentException e) {
-//      assert true;
-//    }
-//    // TEST_END
-//
-//    //TEST
-//    try{
-//      new MissionPlanner.Resource(null, -1);
-//      assert false;
-//    } catch (IllegalArgumentException e) {
-//      assert true;
-//    }
-//    // TEST_END
-//
-//    //TEST
-//    try{
-//      new MissionPlanner.Task("", "Task1", 0, 5, Map.of("Astronaut", 2, "Equipment", 3));
-//      assert false;
-//    } catch (IllegalArgumentException e) {
-//      assert true;
-//    }
-//    // TEST_END
-//
-//    //TEST
-//    try{
-//      new MissionPlanner.Task("mission", null , 0, 5, Map.of("Astronaut", 2, "Equipment", 3));
-//      assert false;
-//    } catch (IllegalArgumentException e) {
-//      assert true;
-//    }
-//    // TEST_END
-//
-//    //TEST
-//    try{
-//      new MissionPlanner.Task("mission", null , -1, 5, Map.of("Astronaut", 2, "Equipment", 3));
-//      assert false;
-//    } catch (IllegalArgumentException e) {
-//      assert true;
-//    }
-//    // TEST_END
-//
-//    //TEST
-//    try{
-//      new MissionPlanner.Task("mission", "task1" , 0, -5, Map.of("Astronaut", 2, "Equipment", 3));
-//      assert false;
-//    } catch (IllegalArgumentException e) {
-//      assert true;
-//    }
-//    // TEST_END
-//
-//    //TEST
-//    try{
-//      new MissionPlanner.Task("mission", "task1" , 0, 5, null);
-//      assert false;
-//    } catch (IllegalArgumentException e) {
-//      assert true;
-//    }
-//    // TEST_END
-//
-//  }
 //}
