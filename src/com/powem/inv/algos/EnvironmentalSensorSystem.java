@@ -1,3 +1,5 @@
+package com.powem.inv.algos;
+
 //Problem: Environmental Sensor Data Aggregation
 //Problem Statement:
 //Develop a system to aggregate and analyze data from multiple environmental sensors deployed
@@ -20,7 +22,6 @@
 //    public List<String> detectAbnormalConditions();
 //}
 
-package com.powem.inv.algos;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -28,90 +29,91 @@ import java.util.List;
 import java.util.Map;
 
 public class EnvironmentalSensorSystem {
-  private static class SensorData {
-    String location;
-    Map<String, Double> totalReadings;
-    Map<String, Integer> countReadings;
-    Map<String, Double> latestReadings;
+    private static class SensorData {
+        String location;
+        Map<String, Double> totalReadings;
+        Map<String, Integer> countReadings;
+        Map<String, Double> latestReadings;
 
-    SensorData(String location) {
-      this.location = location;
-      this.totalReadings = new HashMap<>();
-      this.countReadings = new HashMap<>();
-      this.latestReadings = new HashMap<>();
-    }
-
-    void addReadings(Map<String, Double> readings) {
-      for (Map.Entry<String, Double> entry : readings.entrySet()) {
-        String metric = entry.getKey();
-        Double value = entry.getValue();
-        totalReadings.put(metric, totalReadings.getOrDefault(metric, 0.0) + value);
-        countReadings.put(metric, countReadings.getOrDefault(metric, 0) + 1);
-        latestReadings.put(metric, value);
-      }
-    }
-
-    Map<String, Double> getAverageReadings() {
-      Map<String, Double> averages = new HashMap<>();
-      for (String metric : totalReadings.keySet()) {
-        double average = totalReadings.get(metric) / countReadings.get(metric);
-        averages.put(metric, average);
-      }
-      return averages;
-    }
-  }
-
-  private final Map<String, SensorData> sensors = new HashMap<>();
-  private final Map<String, Map<String, Double>> thresholds = new HashMap<>();
-
-  public void addSensor(String sensorId, String location) {
-    if (sensorId == null || sensorId.isEmpty() || location == null || location.isEmpty()) {
-      throw new IllegalArgumentException("Invalid sensor or location");
-    }
-    sensors.put(sensorId, new SensorData(location));
-  }
-
-  public void updateSensorData(String sensorId, Map<String, Double> readings) {
-    if (sensorId == null || sensorId.isEmpty() || readings == null) {
-      throw new IllegalArgumentException("Invalid input data");
-    }
-    SensorData sensorData = sensors.get(sensorId);
-    if (sensorData == null) {
-      throw new IllegalArgumentException("Sensor not found");
-    }
-    sensorData.addReadings(readings);
-  }
-
-  public Map<String, Map<String, Double>> calculateAverageReadings() {
-    Map<String, Map<String, Double>> averageReadings = new HashMap<>();
-    for (SensorData sensorData : sensors.values()) {
-      if (!sensorData.totalReadings.isEmpty()) {
-        averageReadings.put(sensorData.location, sensorData.getAverageReadings());
-      }
-    }
-    return averageReadings;
-  }
-
-  public List<String> detectAbnormalConditions() {
-    List<String> abnormalities = new ArrayList<>();
-    for (SensorData sensorData : sensors.values()) {
-      for (Map.Entry<String, Double> entry : sensorData.latestReadings.entrySet()) {
-        String metric = entry.getKey();
-        Double value = entry.getValue();
-        Map<String, Double> threshold = thresholds.get(metric);
-        if (threshold != null && (value < threshold.get("min") || value > threshold.get("max"))) {
-          abnormalities.add("Abnormal condition detected at " + sensorData.location + ": " + metric + " = " + value);
+        SensorData(String location) {
+            this.location = location;
+            this.totalReadings = new HashMap<>();
+            this.countReadings = new HashMap<>();
+            this.latestReadings = new HashMap<>();
         }
-      }
-    }
-    return abnormalities;
-  }
 
-  public void setThresholds(Map<String, Map<String, Double>> thresholds) {
-    this.thresholds.putAll(thresholds);
-  }
+        void addReadings(Map<String, Double> readings) {
+            for (Map.Entry<String, Double> entry : readings.entrySet()) {
+                String metric = entry.getKey();
+                Double value = entry.getValue();
+                totalReadings.put(metric, totalReadings.getOrDefault(metric, 0.0) + value);
+                countReadings.put(metric, countReadings.getOrDefault(metric, 0) + 1);
+                latestReadings.put(metric, value);
+            }
+        }
+
+        Map<String, Double> getAverageReadings() {
+            Map<String, Double> averages = new HashMap<>();
+            for (String metric : totalReadings.keySet()) {
+                double average = totalReadings.get(metric) / countReadings.get(metric);
+                averages.put(metric, average);
+            }
+            return averages;
+        }
+    }
+
+    private final Map<String, SensorData> sensors = new HashMap<>();
+    private final Map<String, Map<String, Double>> thresholds = new HashMap<>();
+
+    public void addSensor(String sensorId, String location) {
+        if (sensorId == null || sensorId.isEmpty() || location == null || location.isEmpty()) {
+            throw new IllegalArgumentException("Invalid sensor or location");
+        }
+        sensors.put(sensorId, new SensorData(location));
+    }
+
+    public void updateSensorData(String sensorId, Map<String, Double> readings) {
+        if (sensorId == null || sensorId.isEmpty() || readings == null) {
+            throw new IllegalArgumentException("Invalid input data");
+        }
+        SensorData sensorData = sensors.get(sensorId);
+        if (sensorData == null) {
+            throw new IllegalArgumentException("Sensor not found");
+        }
+        sensorData.addReadings(readings);
+    }
+
+    public Map<String, Map<String, Double>> calculateAverageReadings() {
+        Map<String, Map<String, Double>> averageReadings = new HashMap<>();
+        for (SensorData sensorData : sensors.values()) {
+            if (!sensorData.totalReadings.isEmpty()) {
+                averageReadings.put(sensorData.location, sensorData.getAverageReadings());
+            }
+        }
+        return averageReadings;
+    }
+
+    public List<String> detectAbnormalConditions() {
+        List<String> abnormalities = new ArrayList<>();
+        for (SensorData sensorData : sensors.values()) {
+            for (Map.Entry<String, Double> entry : sensorData.latestReadings.entrySet()) {
+                String metric = entry.getKey();
+                Double value = entry.getValue();
+                Map<String, Double> threshold = thresholds.get(metric);
+                if (threshold != null && (value < threshold.get("min") || value > threshold.get("max"))) {
+                    abnormalities.add("Abnormal condition detected at " + sensorData.location + ": " + metric + " = " + value);
+                }
+            }
+        }
+        return abnormalities;
+    }
+
+    public void setThresholds(Map<String, Map<String, Double>> thresholds) {
+        this.thresholds.putAll(thresholds);
+    }
 }
 
+//TEST--
 //import com.powem.inv.algos.EnvironmentalSensorSystem;
 //import java.util.HashMap;
 //import java.util.List;
@@ -227,7 +229,13 @@ public class EnvironmentalSensorSystem {
 //
 //    List<String> abnormalities = system.detectAbnormalConditions();
 //    assert abnormalities.size() == 2;
+//    // TEST_END
+//
+//    // TEST
 //    assert abnormalities.get(0).contains("Temperature = 18.0");
+//    // TEST_END
+//
+//    // TEST
 //    assert abnormalities.get(1).contains("Humidity = 75.0");
 //    // TEST_END
 //  }

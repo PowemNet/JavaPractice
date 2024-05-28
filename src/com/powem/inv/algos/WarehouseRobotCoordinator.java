@@ -1,3 +1,4 @@
+package com.powem.inv.algos;
 //Problem: Multi-Robot Coordination for Warehouse Automation
 //Problem Statement:
 //Develop a system for coordinating multiple robots in a warehouse to optimize the
@@ -15,7 +16,7 @@
 //Implement collision avoidance, task optimization, and communication algorithms to avoid
 //congestion and deadlocks.
 //Function Signature:
-//public class AdvancedWarehouseRobotCoordinator {
+//public class WarehouseRobotCoordinator {
 //    public void addRobot(int robotId, int x, int y);
 //    public void assignTask(int robotId, int targetX, int targetY);
 //    public void moveRobots();
@@ -23,93 +24,107 @@
 //    public void communicate();
 //}
 
-
-package com.powem.inv.algos;
-
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
 public class WarehouseRobotCoordinator {
-  private Map<Integer, Robot> robots = new HashMap<>();
-  private Set<String> occupiedPositions = new HashSet<>();
-  private Map<Integer, int[]> tasks = new HashMap<>();
+    private Map<Integer, Robot> robots = new HashMap<>();
+    private Set<String> occupiedPositions = new HashSet<>();
+    private Map<Integer, int[]> tasks = new HashMap<>();
 
-  public void addRobot(int robotId, int x, int y) {
-    if (robots.containsKey(robotId) || occupiedPositions.contains(x + "," + y)) {
-      throw new IllegalArgumentException("Robot with this ID already exists or position is occupied");
-    }
-    robots.put(robotId, new Robot(robotId, x, y));
-    occupiedPositions.add(x + "," + y);
-  }
-
-  public void assignTask(int robotId, int targetX, int targetY) {
-    if (!robots.containsKey(robotId)) {
-      throw new IllegalArgumentException("Robot not found");
-    }
-    tasks.put(robotId, new int[]{targetX, targetY});
-  }
-
-  public void moveRobots() {
-    for (int robotId : robots.keySet()) {
-      Robot robot = robots.get(robotId);
-      int[] target = tasks.getOrDefault(robotId, new int[]{robot.x, robot.y});
-      occupiedPositions.remove(robot.x + "," + robot.y);
-      robot.move(target[0], target[1]);
-      occupiedPositions.add(robot.x + "," + robot.y);
-    }
-  }
-
-  public Map<Integer, int[]> getRobotPositions() {
-    Map<Integer, int[]> positions = new HashMap<>();
-    for (Robot robot : robots.values()) {
-      positions.put(robot.id, new int[]{robot.x, robot.y});
-    }
-    return positions;
-  }
-
-  public void communicate() {
-    for (Robot robot : robots.values()) {
-      for (Robot other : robots.values()) {
-        if (robot.id != other.id && robot.isNearby(other)) {
-          robot.avoidCollision(other);
+    public void addRobot(int robotId, int x, int y) {
+        if (robotId < 0 || x < 0 || y < 0) {
+            throw new IllegalArgumentException("Invalid input");
         }
-      }
-    }
-  }
-
-  private class Robot {
-    int id;
-    int x, y;
-
-    Robot(int id, int x, int y) {
-      this.id = id;
-      this.x = x;
-      this.y = y;
+        if (robots.containsKey(robotId) || occupiedPositions.contains(x + "," + y)) {
+            throw new IllegalArgumentException("Robot with this ID already exists or position is occupied");
+        }
+        robots.put(robotId, new Robot(robotId, x, y));
+        occupiedPositions.add(x + "," + y);
     }
 
-    void move(int targetX, int targetY) {
-      if (x < targetX) x++;
-      else if (x > targetX) x--;
-      else if (y < targetY) y++;
-      else if (y > targetY) y--;
+    public void assignTask(int robotId, int targetX, int targetY) {
+        if (robotId < 0 || targetX < 0 || targetY < 0) {
+            throw new IllegalArgumentException("Invalid input");
+        }
+        if (!robots.containsKey(robotId)) {
+            throw new IllegalArgumentException("Robot not found");
+        }
+        tasks.put(robotId, new int[]{targetX, targetY});
     }
 
-    boolean isNearby(Robot other) {
-      return Math.abs(this.x - other.x) + Math.abs(this.y - other.y) == 1;
+    public void moveRobots() {
+        for (int robotId : robots.keySet()) {
+            Robot robot = robots.get(robotId);
+            int[] target = tasks.getOrDefault(robotId, new int[]{robot.x, robot.y});
+            occupiedPositions.remove(robot.x + "," + robot.y);
+            robot.move(target[0], target[1]);
+            occupiedPositions.add(robot.x + "," + robot.y);
+        }
     }
 
-    void avoidCollision(Robot other) {
-      if (this.x == other.x) {
-        if (this.y < other.y) this.y--;
-        else this.y++;
-      } else if (this.y == other.y) {
-        if (this.x < other.x) this.x--;
-        else this.x++;
-      }
+    public Map<Integer, int[]> getRobotPositions() {
+        Map<Integer, int[]> positions = new HashMap<>();
+        for (Robot robot : robots.values()) {
+            positions.put(robot.id, new int[]{robot.x, robot.y});
+        }
+        return positions;
     }
-  }
+
+    public void communicate() {
+        for (Robot robot : robots.values()) {
+            for (Robot other : robots.values()) {
+                if (robot.id != other.id && robot.isNearby(other)) {
+                    robot.avoidCollision(other);
+                }
+            }
+        }
+    }
+
+    private class Robot {
+        int id;
+        int x, y;
+
+        Robot(int id, int x, int y) {
+            this.id = id;
+            this.x = x;
+            this.y = y;
+        }
+
+        void move(int targetX, int targetY) {
+            if (x < targetX) {
+                x++;
+            } else if (x > targetX) {
+                x--;
+            } else if (y < targetY) {
+                y++;
+            } else if (y > targetY) {
+                y--;
+            }
+        }
+
+        boolean isNearby(Robot other) {
+            return Math.abs(this.x - other.x) + Math.abs(this.y - other.y) == 1;
+        }
+
+        void avoidCollision(Robot other) {
+            if (this.x == other.x) {
+                if (this.y < other.y) {
+                    this.y--;
+                } else {
+                    this.y++;
+                }
+            } else if (this.y == other.y) {
+                if (this.x < other.x) {
+                    this.x--;
+                } else {
+                    this.x++;
+                }
+            }
+        }
+    }
 }
 
 //import com.powem.inv.algos.WarehouseRobotCoordinator;
